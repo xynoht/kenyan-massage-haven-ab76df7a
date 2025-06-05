@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -44,6 +43,9 @@ const GiftVoucher = () => {
     setIsSubmitting(true);
 
     try {
+      // Generate a placeholder voucher code (will be overridden by DB trigger)
+      const temporaryVoucherCode = `TEMP-${Date.now()}`;
+      
       // Insert gift voucher into database
       const { data: voucher, error: voucherError } = await supabase
         .from('gift_vouchers')
@@ -55,7 +57,8 @@ const GiftVoucher = () => {
           amount: parseInt(formData.amount),
           branch: formData.branch,
           status: 'active',
-          payment_status: 'pending'
+          payment_status: 'pending',
+          voucher_code: temporaryVoucherCode // Add this to satisfy TypeScript
         })
         .select()
         .single();
