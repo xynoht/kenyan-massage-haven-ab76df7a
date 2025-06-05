@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { Gift, Heart } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 const GiftVoucher = () => {
   const [formData, setFormData] = useState({
@@ -18,6 +19,7 @@ const GiftVoucher = () => {
     amount: "",
     branch: ""
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
 
   const voucherAmounts = [
@@ -27,7 +29,7 @@ const GiftVoucher = () => {
     { value: "custom", label: "Custom Amount" }
   ];
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!formData.senderName || !formData.recipientName || !formData.recipientPhone || !formData.amount || !formData.branch) {
@@ -39,13 +41,66 @@ const GiftVoucher = () => {
       return;
     }
 
-    // Here you would integrate with Supabase and payment processing
-    console.log("Voucher data:", formData);
+    setIsSubmitting(true);
 
-    toast({
-      title: "Voucher Request Received!",
-      description: "Proceed to payment to complete your gift voucher purchase.",
-    });
+    try {
+      // Insert gift voucher into database
+      const { data: voucher, error: voucherError } = await supabase
+        .from('gift_vouchers')
+        .insert({
+          sender_name: formData.senderName,
+          recipient_name: formData.recipientName,
+          recipient_phone: formData.recipientPhone,
+          message: formData.message,
+          amount: parseInt(formData.amount),
+          branch: formData.branch,
+          status: 'active',
+          payment_status: 'pending'
+        })
+        .select()
+        .single();
+
+      if (voucherError) throw voucherError;
+
+      // Create payment transaction record
+      const { error: paymentError } = await supabase
+        .from('payment_transactions')
+        .insert({
+          transaction_type: 'gift_voucher',
+          reference_id: voucher.id,
+          amount: parseInt(formData.amount),
+          currency: 'KES',
+          payment_method: 'mpesa',
+          status: 'pending'
+        });
+
+      if (paymentError) throw paymentError;
+
+      toast({
+        title: "Voucher Request Received!",
+        description: "Proceed to payment to complete your gift voucher purchase.",
+      });
+
+      // Reset form
+      setFormData({
+        senderName: "",
+        recipientName: "",
+        recipientPhone: "",
+        message: "",
+        amount: "",
+        branch: ""
+      });
+
+    } catch (error) {
+      console.error('Gift voucher error:', error);
+      toast({
+        title: "Voucher Request Failed",
+        description: "There was an error processing your voucher. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -161,8 +216,12 @@ const GiftVoucher = () => {
                       </div>
                     </div>
 
-                    <Button type="submit" className="w-full bg-coral hover:bg-coral/90 text-black font-semibold py-3">
-                      Continue to Payment
+                    <Button 
+                      type="submit" 
+                      disabled={isSubmitting}
+                      className="w-full bg-coral hover:bg-coral/90 text-black font-semibold py-3"
+                    >
+                      {isSubmitting ? "Processing..." : "Continue to Payment"}
                     </Button>
                   </form>
                 </CardContent>
@@ -201,7 +260,7 @@ const GiftVoucher = () => {
                   )}
                   
                   <div className="mt-4 text-xs">
-                    <p>Voucher Code: PRI-XXXX</p>
+                    <p>Voucher Code: Will be generated</p>
                     <p>Valid for 12 months</p>
                   </div>
                 </CardContent>

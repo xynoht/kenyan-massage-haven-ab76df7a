@@ -9,13 +9,174 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      bookings: {
+        Row: {
+          branch: string
+          created_at: string
+          date: string
+          duration: number
+          email: string | null
+          id: string
+          name: string
+          notes: string | null
+          phone: string
+          status: string
+          time: string
+          total_amount: number
+          updated_at: string
+        }
+        Insert: {
+          branch: string
+          created_at?: string
+          date: string
+          duration: number
+          email?: string | null
+          id?: string
+          name: string
+          notes?: string | null
+          phone: string
+          status?: string
+          time: string
+          total_amount: number
+          updated_at?: string
+        }
+        Update: {
+          branch?: string
+          created_at?: string
+          date?: string
+          duration?: number
+          email?: string | null
+          id?: string
+          name?: string
+          notes?: string | null
+          phone?: string
+          status?: string
+          time?: string
+          total_amount?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      contact_messages: {
+        Row: {
+          created_at: string
+          id: string
+          message: string
+          name: string
+          phone: string
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          message: string
+          name: string
+          phone: string
+          status?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          message?: string
+          name?: string
+          phone?: string
+          status?: string
+        }
+        Relationships: []
+      }
+      gift_vouchers: {
+        Row: {
+          amount: number
+          branch: string
+          created_at: string
+          expires_at: string
+          id: string
+          message: string | null
+          payment_status: string
+          recipient_name: string
+          recipient_phone: string
+          sender_name: string
+          status: string
+          voucher_code: string
+        }
+        Insert: {
+          amount: number
+          branch: string
+          created_at?: string
+          expires_at?: string
+          id?: string
+          message?: string | null
+          payment_status?: string
+          recipient_name: string
+          recipient_phone: string
+          sender_name: string
+          status?: string
+          voucher_code: string
+        }
+        Update: {
+          amount?: number
+          branch?: string
+          created_at?: string
+          expires_at?: string
+          id?: string
+          message?: string | null
+          payment_status?: string
+          recipient_name?: string
+          recipient_phone?: string
+          sender_name?: string
+          status?: string
+          voucher_code?: string
+        }
+        Relationships: []
+      }
+      payment_transactions: {
+        Row: {
+          amount: number
+          completed_at: string | null
+          created_at: string
+          currency: string
+          id: string
+          payment_method: string
+          reference_id: string
+          status: string
+          transaction_id: string | null
+          transaction_type: string
+        }
+        Insert: {
+          amount: number
+          completed_at?: string | null
+          created_at?: string
+          currency?: string
+          id?: string
+          payment_method: string
+          reference_id: string
+          status?: string
+          transaction_id?: string | null
+          transaction_type: string
+        }
+        Update: {
+          amount?: number
+          completed_at?: string | null
+          created_at?: string
+          currency?: string
+          id?: string
+          payment_method?: string
+          reference_id?: string
+          status?: string
+          transaction_id?: string | null
+          transaction_type?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      generate_voucher_code: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
     }
     Enums: {
       [_ in never]: never

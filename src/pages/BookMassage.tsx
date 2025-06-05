@@ -12,6 +12,7 @@ import { CalendarIcon, Clock, MapPin } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 const BookMassage = () => {
   const [date, setDate] = useState<Date>();
@@ -24,6 +25,7 @@ const BookMassage = () => {
     branch: "",
     notes: ""
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
 
   const timeSlots = [
@@ -38,7 +40,7 @@ const BookMassage = () => {
     { value: "45", label: "45 Minutes - Ksh 1,500", price: 1500 }
   ];
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!date || !formData.name || !formData.phone || !formData.time || !formData.duration || !formData.branch) {
@@ -50,28 +52,75 @@ const BookMassage = () => {
       return;
     }
 
-    // Here you would integrate with Supabase to save the booking
-    console.log("Booking data:", {
-      ...formData,
-      date: date?.toISOString(),
-    });
+    setIsSubmitting(true);
 
-    toast({
-      title: "Booking Request Received!",
-      description: "We'll confirm your appointment shortly via SMS/WhatsApp.",
-    });
+    try {
+      const selectedDuration = durations.find(d => d.value === formData.duration);
+      if (!selectedDuration) {
+        throw new Error("Invalid duration selected");
+      }
 
-    // Reset form
-    setFormData({
-      name: "",
-      phone: "",
-      email: "",
-      time: "",
-      duration: "",
-      branch: "",
-      notes: ""
-    });
-    setDate(undefined);
+      // Insert booking into database
+      const { data: booking, error: bookingError } = await supabase
+        .from('bookings')
+        .insert({
+          name: formData.name,
+          phone: formData.phone,
+          email: formData.email,
+          date: format(date, 'yyyy-MM-dd'),
+          time: formData.time,
+          duration: parseInt(formData.duration),
+          branch: formData.branch,
+          notes: formData.notes,
+          total_amount: selectedDuration.price,
+          status: 'pending'
+        })
+        .select()
+        .single();
+
+      if (bookingError) throw bookingError;
+
+      // Create payment transaction record
+      const { error: paymentError } = await supabase
+        .from('payment_transactions')
+        .insert({
+          transaction_type: 'booking',
+          reference_id: booking.id,
+          amount: selectedDuration.price,
+          currency: 'KES',
+          payment_method: 'mpesa',
+          status: 'pending'
+        });
+
+      if (paymentError) throw paymentError;
+
+      toast({
+        title: "Booking Request Received!",
+        description: "We'll confirm your appointment shortly via SMS/WhatsApp. Please proceed with payment.",
+      });
+
+      // Reset form
+      setFormData({
+        name: "",
+        phone: "",
+        email: "",
+        time: "",
+        duration: "",
+        branch: "",
+        notes: ""
+      });
+      setDate(undefined);
+
+    } catch (error) {
+      console.error('Booking error:', error);
+      toast({
+        title: "Booking Failed",
+        description: "There was an error processing your booking. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const selectedDuration = durations.find(d => d.value === formData.duration);
@@ -223,8 +272,12 @@ const BookMassage = () => {
                       />
                     </div>
 
-                    <Button type="submit" className="w-full bg-coral hover:bg-coral/90 text-black font-semibold py-3">
-                      Continue to Payment
+                    <Button 
+                      type="submit" 
+                      disabled={isSubmitting}
+                      className="w-full bg-coral hover:bg-coral/90 text-black font-semibold py-3"
+                    >
+                      {isSubmitting ? "Processing..." : "Continue to Payment"}
                     </Button>
                   </form>
                 </CardContent>
