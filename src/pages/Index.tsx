@@ -1,4 +1,3 @@
-
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -9,9 +8,9 @@ const Index = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   
   const heroImages = [
-    "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=1920&h=1080&fit=crop",
-    "https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=1920&h=1080&fit=crop",
-    "https://images.unsplash.com/photo-1500673922987-e212871fec22?w=1920&h=1080&fit=crop"
+    "/lovable-uploads/bdb2ee71-df47-4127-b3de-857f36c27e42.png",
+    "https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=1920&h=1080&fit=crop",
+    "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=1920&h=1080&fit=crop"
   ];
 
   const testimonials = [

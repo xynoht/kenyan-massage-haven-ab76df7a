@@ -9,38 +9,38 @@ const Gallery = () => {
 
   const galleryImages = [
     {
-      url: "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=800&h=600&fit=crop",
-      caption: "Serene massage environment at The Hub Karen",
-      category: "Location"
-    },
-    {
-      url: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=800&h=600&fit=crop",
-      caption: "Premium AI massage chair technology",
+      url: "/lovable-uploads/bdb2ee71-df47-4127-b3de-857f36c27e42.png",
+      caption: "Premium AI massage chair with customer relaxing",
       category: "Equipment"
     },
     {
-      url: "https://images.unsplash.com/photo-1500673922987-e212871fec22?w=800&h=600&fit=crop",
-      caption: "Relaxing ambiance and comfortable setting",
-      category: "Ambiance"
+      url: "https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=800&h=600&fit=crop",
+      caption: "Luxury massage chair in serene environment",
+      category: "Equipment"
     },
     {
-      url: "https://images.unsplash.com/photo-1649972904349-6e44c42644a7?w=800&h=600&fit=crop",
-      caption: "Customer enjoying wellness session",
+      url: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800&h=600&fit=crop",
+      caption: "Modern massage therapy setting",
+      category: "Location"
+    },
+    {
+      url: "https://images.unsplash.com/photo-1540555700478-4be289fbecef?w=800&h=600&fit=crop",
+      caption: "Professional massage chair experience",
       category: "Experience"
     },
     {
-      url: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=800&h=600&fit=crop",
-      caption: "Professional consultation area",
-      category: "Service"
+      url: "https://images.unsplash.com/photo-1559757175-0eb30cd8c063?w=800&h=600&fit=crop",
+      caption: "Relaxing wellness environment at The Hub Karen",
+      category: "Location"
     },
     {
-      url: "https://images.unsplash.com/photo-1721322800607-8c38375eef04?w=800&h=600&fit=crop",
-      caption: "Comfortable waiting area",
-      category: "Location"
+      url: "https://images.unsplash.com/photo-1600334129128-685c5582fd35?w=800&h=600&fit=crop",
+      caption: "Customer enjoying premium massage therapy",
+      category: "Experience"
     }
   ];
 
-  const categories = ["All", "Location", "Equipment", "Ambiance", "Experience", "Service"];
+  const categories = ["All", "Location", "Equipment", "Experience"];
   const [activeCategory, setActiveCategory] = useState("All");
 
   const filteredImages = activeCategory === "All" 
@@ -74,8 +74,8 @@ const Gallery = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h1 className="text-5xl font-bold text-gold mb-6">Gallery</h1>
           <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-            Take a visual journey through our premium massage therapy station. See our state-of-the-art facilities, 
-            AI-powered equipment, and the serene environment we've created for your wellness experience.
+            Take a visual journey through our premium massage therapy station. See our state-of-the-art AI massage chairs, 
+            satisfied customers enjoying their wellness sessions, and the serene environment we've created for your relaxation.
           </p>
           <div className="w-24 h-1 bg-coral mx-auto mt-8"></div>
         </div>
@@ -175,15 +175,15 @@ const Gallery = () => {
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-gold mb-4">The Priella Experience</h2>
             <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-              Every detail has been carefully designed to create the perfect wellness environment
+              Every detail has been carefully designed to create the perfect massage therapy environment
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {[
               {
-                title: "Premium Equipment",
-                description: "State-of-the-art AI massage chairs with advanced therapeutic programs",
+                title: "Premium AI Massage Chairs",
+                description: "State-of-the-art massage chairs with advanced therapeutic programs and AI technology",
                 icon: "🪑"
               },
               {
@@ -203,12 +203,12 @@ const Gallery = () => {
               },
               {
                 title: "Comfort Focus",
-                description: "Every aspect designed for your comfort and convenience",
+                description: "Every aspect designed for your comfort and convenience during massage sessions",
                 icon: "💆‍♀️"
               },
               {
-                title: "Technology Integration",
-                description: "Cutting-edge AI technology for personalized massage experiences",
+                title: "AI Technology Integration",
+                description: "Cutting-edge AI technology for personalized massage experiences tailored to your needs",
                 icon: "🤖"
               }
             ].map((feature, index) => (
@@ -229,7 +229,7 @@ const Gallery = () => {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-4xl font-bold text-black mb-6">Ready to Experience It Yourself?</h2>
           <p className="text-xl text-black/80 mb-8">
-            See why our customers love the Priella experience. Book your session today and 
+            See why our customers love the Priella massage chair experience. Book your session today and 
             discover premium wellness in the heart of Nairobi.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">

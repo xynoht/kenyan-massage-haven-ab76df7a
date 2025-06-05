@@ -1,6 +1,6 @@
 
 import { Link } from "react-router-dom";
-import { MapPin, Phone, Mail } from "lucide-react";
+import { MapPin, Phone, Mail, Instagram, Facebook } from "lucide-react";
 
 const Footer = () => {
   return (
@@ -18,7 +18,7 @@ const Footer = () => {
               <span className="text-gold text-xl font-bold">PRIELLA</span>
             </div>
             <p className="text-gray-300 mb-6 max-w-md">
-              Premium AI-powered massage therapy station in Nairobi. Experience luxury wellness with cutting-edge technology.
+              Premium AI-powered massage therapy station in Nairobi. Experience luxury wellness with cutting-edge massage chair technology.
             </p>
             <div className="space-y-2">
               <div className="flex items-center text-gray-300">
@@ -48,15 +48,45 @@ const Footer = () => {
             </ul>
           </div>
 
-          {/* Legal & Social */}
+          {/* Social Media & Legal */}
           <div>
             <h3 className="text-gold font-semibold mb-4">Connect</h3>
-            <ul className="space-y-2 mb-6">
-              <li><a href="https://www.instagram.com/priellatherapy" target="_blank" rel="noopener noreferrer" className="text-gray-300 hover:text-coral transition-colors">Instagram</a></li>
-              <li><a href="https://www.facebook.com/profile.php?id=61576776757354" target="_blank" rel="noopener noreferrer" className="text-gray-300 hover:text-coral transition-colors">Facebook</a></li>
-              <li><a href="https://www.tiktok.com/@priella_therapy?_t=ZM-8wv8xuDH1ra&_r=1" target="_blank" rel="noopener noreferrer" className="text-gray-300 hover:text-coral transition-colors">TikTok</a></li>
-              <li><a href="https://wa.me/254710904327" target="_blank" rel="noopener noreferrer" className="text-gray-300 hover:text-coral transition-colors">WhatsApp</a></li>
-            </ul>
+            <div className="space-y-4 mb-6">
+              <a 
+                href="https://www.instagram.com/priellatherapy" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="flex items-center text-gray-300 hover:text-coral transition-colors"
+              >
+                <Instagram className="h-5 w-5 mr-2" />
+                <span>Instagram</span>
+              </a>
+              <a 
+                href="https://www.facebook.com/profile.php?id=61576776757354" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="flex items-center text-gray-300 hover:text-coral transition-colors"
+              >
+                <Facebook className="h-5 w-5 mr-2" />
+                <span>Facebook</span>
+              </a>
+              <a 
+                href="https://www.tiktok.com/@priella_therapy?_t=ZM-8wv8xuDH1ra&_r=1" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="text-gray-300 hover:text-coral transition-colors block"
+              >
+                TikTok
+              </a>
+              <a 
+                href="https://wa.me/254710904327" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="text-gray-300 hover:text-coral transition-colors block"
+              >
+                WhatsApp
+              </a>
+            </div>
             <div className="space-y-1">
               <Link to="/terms" className="block text-sm text-gray-400 hover:text-coral transition-colors">Terms of Service</Link>
               <Link to="/privacy" className="block text-sm text-gray-400 hover:text-coral transition-colors">Privacy Policy</Link>
