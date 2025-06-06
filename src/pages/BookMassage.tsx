@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -13,6 +12,7 @@ import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import PaymentModal from "@/components/PaymentModal";
 
 const BookMassage = () => {
   const [date, setDate] = useState<Date>();
@@ -26,6 +26,8 @@ const BookMassage = () => {
     notes: ""
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [currentBookingId, setCurrentBookingId] = useState<string | null>(null);
   const { toast } = useToast();
 
   const timeSlots = [
@@ -96,8 +98,12 @@ const BookMassage = () => {
 
       toast({
         title: "Booking Request Received!",
-        description: "We'll confirm your appointment shortly via SMS/WhatsApp. Please proceed with payment.",
+        description: "Please proceed with payment to confirm your appointment.",
       });
+
+      // Open payment modal
+      setCurrentBookingId(booking.id);
+      setShowPaymentModal(true);
 
       // Reset form
       setFormData({
@@ -277,7 +283,7 @@ const BookMassage = () => {
                       disabled={isSubmitting}
                       className="w-full bg-coral hover:bg-coral/90 text-black font-semibold py-3"
                     >
-                      {isSubmitting ? "Processing..." : "Continue to Payment"}
+                      {isSubmitting ? "Processing..." : "Book & Pay Now"}
                     </Button>
                   </form>
                 </CardContent>
@@ -330,6 +336,18 @@ const BookMassage = () => {
           </div>
         </div>
       </section>
+
+      {/* Payment Modal */}
+      {showPaymentModal && currentBookingId && selectedDuration && (
+        <PaymentModal
+          isOpen={showPaymentModal}
+          onClose={() => setShowPaymentModal(false)}
+          amount={selectedDuration.price}
+          referenceId={currentBookingId}
+          transactionType="booking"
+          description="Massage Session Booking"
+        />
+      )}
     </div>
   );
 };

@@ -129,6 +129,60 @@ export type Database = {
         }
         Relationships: []
       }
+      mpesa_transactions: {
+        Row: {
+          amount: number | null
+          checkout_request_id: string
+          created_at: string
+          id: string
+          merchant_request_id: string | null
+          mpesa_receipt_number: string | null
+          payment_reference: string | null
+          phone_number: string | null
+          reference_id: string | null
+          result_code: number | null
+          result_desc: string | null
+          status: string
+          transaction_date: string | null
+          transaction_type: string | null
+          updated_at: string
+        }
+        Insert: {
+          amount?: number | null
+          checkout_request_id: string
+          created_at?: string
+          id?: string
+          merchant_request_id?: string | null
+          mpesa_receipt_number?: string | null
+          payment_reference?: string | null
+          phone_number?: string | null
+          reference_id?: string | null
+          result_code?: number | null
+          result_desc?: string | null
+          status?: string
+          transaction_date?: string | null
+          transaction_type?: string | null
+          updated_at?: string
+        }
+        Update: {
+          amount?: number | null
+          checkout_request_id?: string
+          created_at?: string
+          id?: string
+          merchant_request_id?: string | null
+          mpesa_receipt_number?: string | null
+          payment_reference?: string | null
+          phone_number?: string | null
+          reference_id?: string | null
+          result_code?: number | null
+          result_desc?: string | null
+          status?: string
+          transaction_date?: string | null
+          transaction_type?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       payment_transactions: {
         Row: {
           amount: number
