@@ -86,7 +86,7 @@ const Management = () => {
                 <div className="w-64 h-64 rounded-full overflow-hidden">
                   <img 
                     src="/lovable-uploads/04bb823e-8ea9-4013-add4-7630e90be3dd.png"
-                    alt="Team Member"
+                    alt="Anthony Geoffrey"
                     className="w-full h-full object-cover"
                   />
                 </div>
@@ -95,25 +95,25 @@ const Management = () => {
               {/* Profile Information */}
               <div className="p-8 lg:p-12">
                 <CardHeader className="px-0 pt-0">
-                  <CardTitle className="text-3xl text-gold mb-2">Team Member</CardTitle>
+                  <CardTitle className="text-3xl text-gold mb-2">Anthony Geoffrey</CardTitle>
                   <p className="text-coral text-xl font-semibold">Wellness Assistant</p>
                 </CardHeader>
                 
                 <CardContent className="px-0">
                   <p className="text-gray-300 mb-8 text-lg leading-relaxed">
-                    Our dedicated team member ensures every client receives exceptional service and support 
+                    Anthony is our dedicated wellness assistant who ensures every client receives exceptional service and support 
                     throughout their wellness journey. With a commitment to customer satisfaction and wellness 
-                    excellence, they help maintain the high standards that Priella is known for.
+                    excellence, he helps maintain the high standards that Priella is known for.
                   </p>
                   
                   <div className="space-y-4 mb-8">
                     <div className="flex items-center text-gray-300">
                       <Phone className="h-5 w-5 mr-3 text-coral" />
-                      <span>+254 710 904 327</span>
+                      <span>+254 724 946 613</span>
                     </div>
                     <div className="flex items-center text-gray-300">
                       <Mail className="h-5 w-5 mr-3 text-coral" />
-                      <span>tochiuimaria@gmail.com</span>
+                      <span>anthonygeoffrey87@gmail.com</span>
                     </div>
                     <div className="flex items-center text-gray-300">
                       <MapPin className="h-5 w-5 mr-3 text-coral" />
