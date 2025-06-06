@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -82,23 +83,9 @@ const BookMassage = () => {
 
       if (bookingError) throw bookingError;
 
-      // Create payment transaction record
-      const { error: paymentError } = await supabase
-        .from('payment_transactions')
-        .insert({
-          transaction_type: 'booking',
-          reference_id: booking.id,
-          amount: selectedDuration.price,
-          currency: 'KES',
-          payment_method: 'mpesa',
-          status: 'pending'
-        });
-
-      if (paymentError) throw paymentError;
-
       toast({
         title: "Booking Request Received!",
-        description: "Please proceed with payment to confirm your appointment.",
+        description: "Please complete payment using the instructions provided.",
       });
 
       // Open payment modal
@@ -283,7 +270,7 @@ const BookMassage = () => {
                       disabled={isSubmitting}
                       className="w-full bg-coral hover:bg-coral/90 text-black font-semibold py-3"
                     >
-                      {isSubmitting ? "Processing..." : "Book & Pay Now"}
+                      {isSubmitting ? "Processing..." : "Book & Get Payment Instructions"}
                     </Button>
                   </form>
                 </CardContent>

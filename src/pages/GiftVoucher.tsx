@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -61,30 +62,16 @@ const GiftVoucher = () => {
           branch: formData.branch,
           status: 'active',
           payment_status: 'pending',
-          voucher_code: temporaryVoucherCode // Add this to satisfy TypeScript
+          voucher_code: temporaryVoucherCode
         })
         .select()
         .single();
 
       if (voucherError) throw voucherError;
 
-      // Create payment transaction record
-      const { error: paymentError } = await supabase
-        .from('payment_transactions')
-        .insert({
-          transaction_type: 'gift_voucher',
-          reference_id: voucher.id,
-          amount: parseInt(formData.amount),
-          currency: 'KES',
-          payment_method: 'mpesa',
-          status: 'pending'
-        });
-
-      if (paymentError) throw paymentError;
-
       toast({
         title: "Voucher Request Received!",
-        description: "Please proceed with payment to complete your gift voucher purchase.",
+        description: "Please complete payment using the instructions provided.",
       });
 
       // Open payment modal
@@ -231,7 +218,7 @@ const GiftVoucher = () => {
                       disabled={isSubmitting}
                       className="w-full bg-coral hover:bg-coral/90 text-black font-semibold py-3"
                     >
-                      {isSubmitting ? "Processing..." : "Purchase & Pay Now"}
+                      {isSubmitting ? "Processing..." : "Purchase & Get Payment Instructions"}
                     </Button>
                   </form>
                 </CardContent>
@@ -293,7 +280,7 @@ const GiftVoucher = () => {
               {
                 step: "1",
                 title: "Purchase",
-                description: "Fill out the form and complete payment securely online"
+                description: "Fill out the form and complete payment using M-Pesa Paybill"
               },
               {
                 step: "2",
