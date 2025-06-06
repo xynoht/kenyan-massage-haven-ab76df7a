@@ -9,7 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Gift, Heart } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import PaymentModal from "@/components/PaymentModal";
+import { useNavigate } from "react-router-dom";
 
 const GiftVoucher = () => {
   const [formData, setFormData] = useState({
@@ -21,9 +21,8 @@ const GiftVoucher = () => {
     branch: ""
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [showPaymentModal, setShowPaymentModal] = useState(false);
-  const [currentVoucherId, setCurrentVoucherId] = useState<string | null>(null);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const voucherAmounts = [
     { value: "500", label: "Ksh 500 - 15 Min Session" },
@@ -71,22 +70,11 @@ const GiftVoucher = () => {
 
       toast({
         title: "Voucher Request Received!",
-        description: "Please complete payment using the instructions provided.",
+        description: "Redirecting to payment confirmation...",
       });
 
-      // Open payment modal
-      setCurrentVoucherId(voucher.id);
-      setShowPaymentModal(true);
-
-      // Reset form
-      setFormData({
-        senderName: "",
-        recipientName: "",
-        recipientPhone: "",
-        message: "",
-        amount: "",
-        branch: ""
-      });
+      // Redirect to payment confirmation page
+      navigate(`/payment-confirmation?amount=${formData.amount}&reference=${voucher.id}&type=gift_voucher`);
 
     } catch (error) {
       console.error('Gift voucher error:', error);
@@ -218,7 +206,7 @@ const GiftVoucher = () => {
                       disabled={isSubmitting}
                       className="w-full bg-coral hover:bg-coral/90 text-black font-semibold py-3"
                     >
-                      {isSubmitting ? "Processing..." : "Purchase & Get Payment Instructions"}
+                      {isSubmitting ? "Processing..." : "Proceed to Payment"}
                     </Button>
                   </form>
                 </CardContent>
@@ -304,18 +292,6 @@ const GiftVoucher = () => {
           </div>
         </div>
       </section>
-
-      {/* Payment Modal */}
-      {showPaymentModal && currentVoucherId && (
-        <PaymentModal
-          isOpen={showPaymentModal}
-          onClose={() => setShowPaymentModal(false)}
-          amount={parseInt(formData.amount) || 0}
-          referenceId={currentVoucherId}
-          transactionType="gift_voucher"
-          description="Gift Voucher Purchase"
-        />
-      )}
     </div>
   );
 };

@@ -14,6 +14,8 @@ const Navbar = () => {
     { name: "Services", href: "/services" },
     { name: "Branches", href: "/branches" },
     { name: "Gallery", href: "/gallery" },
+    { name: "Management", href: "/management" },
+    { name: "Testimonials", href: "/testimonials" },
     { name: "Blog", href: "/blog" },
     { name: "Contact", href: "/contact" },
   ];
@@ -35,7 +37,7 @@ const Navbar = () => {
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-8">
+          <div className="hidden md:flex items-center space-x-6">
             {navigation.map((item) => (
               <Link
                 key={item.name}
@@ -47,11 +49,18 @@ const Navbar = () => {
                 {item.name}
               </Link>
             ))}
-            <Link to="/book">
-              <Button className="bg-coral hover:bg-coral/90 text-black font-semibold">
-                Book Now
-              </Button>
-            </Link>
+            <div className="flex space-x-2">
+              <Link to="/book">
+                <Button className="bg-coral hover:bg-coral/90 text-black font-semibold text-sm px-4 py-2">
+                  Book Now
+                </Button>
+              </Link>
+              <Link to="/gift-voucher">
+                <Button variant="outline" className="border-gold text-gold hover:bg-gold hover:text-black text-sm px-4 py-2">
+                  Gift Voucher
+                </Button>
+              </Link>
+            </div>
           </div>
 
           {/* Mobile menu button */}
@@ -82,11 +91,23 @@ const Navbar = () => {
                 {item.name}
               </Link>
             ))}
-            <Link to="/book" onClick={() => setIsOpen(false)}>
-              <Button className="w-full mt-4 bg-coral hover:bg-coral/90 text-black font-semibold">
-                Book Now
-              </Button>
-            </Link>
+            <div className="space-y-2 px-3 pt-2">
+              <Link to="/book" onClick={() => setIsOpen(false)}>
+                <Button className="w-full bg-coral hover:bg-coral/90 text-black font-semibold">
+                  Book Now
+                </Button>
+              </Link>
+              <Link to="/gift-voucher" onClick={() => setIsOpen(false)}>
+                <Button variant="outline" className="w-full border-gold text-gold hover:bg-gold hover:text-black">
+                  Gift Voucher
+                </Button>
+              </Link>
+              <Link to="/terms" onClick={() => setIsOpen(false)}>
+                <Button variant="ghost" className="w-full text-white hover:text-coral">
+                  Terms & Conditions
+                </Button>
+              </Link>
+            </div>
           </div>
         </div>
       )}

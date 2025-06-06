@@ -13,7 +13,7 @@ import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import PaymentModal from "@/components/PaymentModal";
+import { useNavigate } from "react-router-dom";
 
 const BookMassage = () => {
   const [date, setDate] = useState<Date>();
@@ -27,9 +27,8 @@ const BookMassage = () => {
     notes: ""
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [showPaymentModal, setShowPaymentModal] = useState(false);
-  const [currentBookingId, setCurrentBookingId] = useState<string | null>(null);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const timeSlots = [
     "09:00", "09:30", "10:00", "10:30", "11:00", "11:30",
@@ -85,24 +84,11 @@ const BookMassage = () => {
 
       toast({
         title: "Booking Request Received!",
-        description: "Please complete payment using the instructions provided.",
+        description: "Redirecting to payment confirmation...",
       });
 
-      // Open payment modal
-      setCurrentBookingId(booking.id);
-      setShowPaymentModal(true);
-
-      // Reset form
-      setFormData({
-        name: "",
-        phone: "",
-        email: "",
-        time: "",
-        duration: "",
-        branch: "",
-        notes: ""
-      });
-      setDate(undefined);
+      // Redirect to payment confirmation page
+      navigate(`/payment-confirmation?amount=${selectedDuration.price}&reference=${booking.id}&type=booking`);
 
     } catch (error) {
       console.error('Booking error:', error);
@@ -270,7 +256,7 @@ const BookMassage = () => {
                       disabled={isSubmitting}
                       className="w-full bg-coral hover:bg-coral/90 text-black font-semibold py-3"
                     >
-                      {isSubmitting ? "Processing..." : "Book & Get Payment Instructions"}
+                      {isSubmitting ? "Processing..." : "Proceed to Payment"}
                     </Button>
                   </form>
                 </CardContent>
@@ -323,18 +309,6 @@ const BookMassage = () => {
           </div>
         </div>
       </section>
-
-      {/* Payment Modal */}
-      {showPaymentModal && currentBookingId && selectedDuration && (
-        <PaymentModal
-          isOpen={showPaymentModal}
-          onClose={() => setShowPaymentModal(false)}
-          amount={selectedDuration.price}
-          referenceId={currentBookingId}
-          transactionType="booking"
-          description="Massage Session Booking"
-        />
-      )}
     </div>
   );
 };

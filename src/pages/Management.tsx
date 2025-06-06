@@ -20,12 +20,16 @@ const Management = () => {
       {/* Founder Profile */}
       <section className="py-20">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <Card className="bg-gray-800 border-gold/20 overflow-hidden">
+          <Card className="bg-gray-800 border-gold/20 overflow-hidden mb-12">
             <div className="grid grid-cols-1 lg:grid-cols-2">
               {/* Profile Image */}
               <div className="bg-gradient-to-br from-coral to-gold p-8 flex items-center justify-center">
-                <div className="w-64 h-64 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
-                  <User className="h-32 w-32 text-black" />
+                <div className="w-64 h-64 rounded-full overflow-hidden">
+                  <img 
+                    src="/lovable-uploads/f125c9ed-74e3-4d8d-ac19-f18b99a4bf4f.png"
+                    alt="Doris Tochiu Imaria"
+                    className="w-full h-full object-cover"
+                  />
                 </div>
               </div>
               
@@ -67,6 +71,64 @@ const Management = () => {
                     <Button variant="outline" className="border-gold text-gold hover:bg-gold hover:text-black">
                       <Phone className="h-4 w-4 mr-2" />
                       Call Now
+                    </Button>
+                  </div>
+                </CardContent>
+              </div>
+            </div>
+          </Card>
+
+          {/* Employee Profile */}
+          <Card className="bg-gray-800 border-gold/20 overflow-hidden">
+            <div className="grid grid-cols-1 lg:grid-cols-2">
+              {/* Profile Image */}
+              <div className="bg-gradient-to-br from-gold to-coral p-8 flex items-center justify-center">
+                <div className="w-64 h-64 rounded-full overflow-hidden">
+                  <img 
+                    src="/lovable-uploads/04bb823e-8ea9-4013-add4-7630e90be3dd.png"
+                    alt="Team Member"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              </div>
+              
+              {/* Profile Information */}
+              <div className="p-8 lg:p-12">
+                <CardHeader className="px-0 pt-0">
+                  <CardTitle className="text-3xl text-gold mb-2">Team Member</CardTitle>
+                  <p className="text-coral text-xl font-semibold">Wellness Assistant</p>
+                </CardHeader>
+                
+                <CardContent className="px-0">
+                  <p className="text-gray-300 mb-8 text-lg leading-relaxed">
+                    Our dedicated team member ensures every client receives exceptional service and support 
+                    throughout their wellness journey. With a commitment to customer satisfaction and wellness 
+                    excellence, they help maintain the high standards that Priella is known for.
+                  </p>
+                  
+                  <div className="space-y-4 mb-8">
+                    <div className="flex items-center text-gray-300">
+                      <Phone className="h-5 w-5 mr-3 text-coral" />
+                      <span>+254 710 904 327</span>
+                    </div>
+                    <div className="flex items-center text-gray-300">
+                      <Mail className="h-5 w-5 mr-3 text-coral" />
+                      <span>tochiuimaria@gmail.com</span>
+                    </div>
+                    <div className="flex items-center text-gray-300">
+                      <MapPin className="h-5 w-5 mr-3 text-coral" />
+                      <span>The Hub Karen, Nairobi</span>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col sm:flex-row gap-4">
+                    <Button className="bg-coral hover:bg-coral/90 text-black">
+                      <Mail className="h-4 w-4 mr-2" />
+                      Contact
+                    </Button>
+                    <Button variant="outline" className="border-gold text-gold hover:bg-gold hover:text-black">
+                      <Phone className="h-4 w-4 mr-2" />
+                      Call
                     </Button>
                   </div>
                 </CardContent>
