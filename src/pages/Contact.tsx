@@ -63,6 +63,10 @@ const Contact = () => {
     }
   };
 
+  const handleGetDirections = () => {
+    window.open("https://maps.app.goo.gl/PYZWMfidQ88mUpnP9", '_blank');
+  };
+
   return (
     <div className="pt-16 min-h-screen bg-black">
       {/* Header */}
@@ -90,8 +94,10 @@ const Contact = () => {
                   <div>
                     <h3 className="text-xl font-semibold text-white mb-2">Our Location</h3>
                     <p className="text-gray-300">
-                      The Hub Karen<br />
+                      The Hub Mall Karen<br />
                       Upper Ground Floor<br />
+                      Behind Nairobi Sports House<br />
+                      Next to Jump<br />
                       Nairobi, Kenya
                     </p>
                   </div>
@@ -236,17 +242,14 @@ const Contact = () => {
           
           <div className="bg-gray-800 rounded-lg p-8 text-center">
             <Navigation className="h-16 w-16 text-coral mx-auto mb-4" />
-            <h3 className="text-2xl font-semibold text-gold mb-4">The Hub Karen</h3>
+            <h3 className="text-2xl font-semibold text-gold mb-4">The Hub Mall Karen</h3>
             <p className="text-gray-300 mb-6">
-              We're conveniently located on the upper ground floor of The Hub Karen, 
-              one of Nairobi's premier business centers. Easy access with ample parking available.
+              We're conveniently located on the upper ground floor of The Hub Mall Karen, 
+              behind Nairobi Sports House and next to Jump. Easy access with ample parking available.
             </p>
-            <Button className="bg-coral hover:bg-coral/90 text-black">
+            <Button onClick={handleGetDirections} className="bg-coral hover:bg-coral/90 text-black">
               Get Directions
             </Button>
-            <p className="text-sm text-gray-400 mt-4">
-              * Interactive map integration coming soon
-            </p>
           </div>
         </div>
       </section>

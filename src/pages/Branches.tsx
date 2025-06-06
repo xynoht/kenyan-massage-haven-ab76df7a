@@ -1,4 +1,3 @@
-
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { MapPin, Phone, Clock, Navigation, Star } from "lucide-react";
@@ -6,7 +5,7 @@ import { MapPin, Phone, Clock, Navigation, Star } from "lucide-react";
 const Branches = () => {
   const currentBranch = {
     name: "The Hub Karen",
-    address: "Upper Ground Floor, The Hub Karen, Nairobi",
+    address: "Upper Ground Floor, The Hub Mall Karen, Behind Nairobi Sports House, Next to Jump",
     phone: "+254 710 904 327",
     hours: {
       weekdays: "Monday - Friday: 9:00 AM - 6:00 PM",
@@ -21,7 +20,12 @@ const Branches = () => {
       "Sanitized environment",
       "Easy elevator access"
     ],
-    image: "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=800&h=600&fit=crop"
+    mapLink: "https://maps.app.goo.gl/PYZWMfidQ88mUpnP9",
+    image: "/lovable-uploads/2ef4020c-3bcf-41a4-b889-c791cd597281.png"
+  };
+
+  const handleGetDirections = () => {
+    window.open(currentBranch.mapLink, '_blank');
   };
 
   return (
@@ -104,7 +108,7 @@ const Branches = () => {
                   </div>
 
                   <div className="flex flex-col sm:flex-row gap-4 pt-4">
-                    <Button className="bg-coral hover:bg-coral/90 text-black">
+                    <Button onClick={handleGetDirections} className="bg-coral hover:bg-coral/90 text-black">
                       <Navigation className="h-4 w-4 mr-2" />
                       Get Directions
                     </Button>
@@ -130,17 +134,14 @@ const Branches = () => {
           
           <div className="bg-gray-800 rounded-lg p-8 text-center">
             <Navigation className="h-16 w-16 text-coral mx-auto mb-4" />
-            <h3 className="text-2xl font-semibold text-gold mb-4">Interactive Map</h3>
+            <h3 className="text-2xl font-semibold text-gold mb-4">Visit Our Location</h3>
             <p className="text-gray-300 mb-6 max-w-2xl mx-auto">
-              Our location at The Hub Karen is easily accessible by car or public transport. 
-              Ample parking is available, and we're just a short walk from major Karen landmarks.
+              Located at The Hub Mall Karen on the Upper Ground Floor, behind Nairobi Sports House and next to Jump. 
+              Ample parking is available, and we're easily accessible by car or public transport.
             </p>
-            <Button className="bg-coral hover:bg-coral/90 text-black">
+            <Button onClick={handleGetDirections} className="bg-coral hover:bg-coral/90 text-black">
               Open in Google Maps
             </Button>
-            <p className="text-sm text-gray-400 mt-4">
-              * Full interactive map integration coming soon
-            </p>
           </div>
         </div>
       </section>

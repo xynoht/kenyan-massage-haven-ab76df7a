@@ -9,38 +9,58 @@ const Gallery = () => {
 
   const galleryImages = [
     {
-      url: "/lovable-uploads/bdb2ee71-df47-4127-b3de-857f36c27e42.png",
-      caption: "Premium AI massage chair with customer relaxing",
+      url: "/lovable-uploads/0d4806ef-14ea-428a-b686-590d17c79ad6.png",
+      caption: "Maria - Priella Business Owner & Wellness Expert",
+      category: "Team"
+    },
+    {
+      url: "/lovable-uploads/ee4bc4ed-3880-49d3-8f3a-fc48a1f42696.png",
+      caption: "Premium AI massage chairs at The Hub Karen location",
       category: "Equipment"
     },
     {
-      url: "https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=800&h=600&fit=crop",
-      caption: "Luxury massage chair in serene environment",
+      url: "/lovable-uploads/ffd76dca-7343-44e4-a8b4-5df6f65a7879.png",
+      caption: "Modern massage therapy station with multiple chairs",
       category: "Equipment"
     },
     {
-      url: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800&h=600&fit=crop",
-      caption: "Modern massage therapy setting",
-      category: "Location"
+      url: "/lovable-uploads/26288e67-aa97-499d-bd69-955116d1fce8.png",
+      caption: "Advanced massage chair with entertainment center",
+      category: "Equipment"
     },
     {
-      url: "https://images.unsplash.com/photo-1540555700478-4be289fbecef?w=800&h=600&fit=crop",
-      caption: "Professional massage chair experience",
+      url: "/lovable-uploads/15d8e72d-44a0-4c2f-aa00-dcae75282002.png",
+      caption: "Customers enjoying relaxing massage sessions",
       category: "Experience"
     },
     {
-      url: "https://images.unsplash.com/photo-1559757175-0eb30cd8c063?w=800&h=600&fit=crop",
-      caption: "Relaxing wellness environment at The Hub Karen",
+      url: "/lovable-uploads/a3b10646-760f-4afd-a3b1-869eea03379f.png",
+      caption: "Peaceful massage therapy environment with outdoor view",
+      category: "Experience"
+    },
+    {
+      url: "/lovable-uploads/4e96d9c9-9f69-4f3e-ba64-b93f065bd437.png",
+      caption: "Professional massage chair experience at Priella",
+      category: "Experience"
+    },
+    {
+      url: "/lovable-uploads/49da05ee-ce24-43e8-98c9-d27ab712f4ff.png",
+      caption: "State-of-the-art massage chairs with panoramic views",
       category: "Location"
     },
     {
-      url: "https://images.unsplash.com/photo-1600334129128-685c5582fd35?w=800&h=600&fit=crop",
-      caption: "Customer enjoying premium massage therapy",
-      category: "Experience"
+      url: "/lovable-uploads/aed9a61e-075b-4637-89df-74f0ab4dcceb.png",
+      caption: "Premium wellness facility at The Hub Karen",
+      category: "Location"
+    },
+    {
+      url: "/lovable-uploads/2ef4020c-3bcf-41a4-b889-c791cd597281.png",
+      caption: "Beautiful garden views from The Hub Karen location",
+      category: "Location"
     }
   ];
 
-  const categories = ["All", "Location", "Equipment", "Experience"];
+  const categories = ["All", "Team", "Location", "Equipment", "Experience"];
   const [activeCategory, setActiveCategory] = useState("All");
 
   const filteredImages = activeCategory === "All" 
@@ -75,7 +95,7 @@ const Gallery = () => {
           <h1 className="text-5xl font-bold text-gold mb-6">Gallery</h1>
           <p className="text-xl text-gray-300 max-w-3xl mx-auto">
             Take a visual journey through our premium massage therapy station. See our state-of-the-art AI massage chairs, 
-            satisfied customers enjoying their wellness sessions, and the serene environment we've created for your relaxation.
+            satisfied customers enjoying their wellness sessions, and the serene environment we've created for your relaxation at The Hub Karen.
           </p>
           <div className="w-24 h-1 bg-coral mx-auto mt-8"></div>
         </div>
