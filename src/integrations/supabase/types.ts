@@ -9,6 +9,98 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      admin_analytics: {
+        Row: {
+          created_at: string
+          id: string
+          metric_date: string
+          metric_name: string
+          metric_value: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          metric_date?: string
+          metric_name: string
+          metric_value: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          metric_date?: string
+          metric_name?: string
+          metric_value?: number
+        }
+        Relationships: []
+      }
+      admin_sessions: {
+        Row: {
+          admin_id: string
+          created_at: string
+          expires_at: string
+          id: string
+          session_token: string
+        }
+        Insert: {
+          admin_id: string
+          created_at?: string
+          expires_at: string
+          id?: string
+          session_token: string
+        }
+        Update: {
+          admin_id?: string
+          created_at?: string
+          expires_at?: string
+          id?: string
+          session_token?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "admin_sessions_admin_id_fkey"
+            columns: ["admin_id"]
+            isOneToOne: false
+            referencedRelation: "admin_users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      admin_users: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          is_active: boolean
+          last_login_at: string | null
+          name: string
+          password_hash: string
+          role: Database["public"]["Enums"]["admin_role"]
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          is_active?: boolean
+          last_login_at?: string | null
+          name: string
+          password_hash: string
+          role?: Database["public"]["Enums"]["admin_role"]
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          is_active?: boolean
+          last_login_at?: string | null
+          name?: string
+          password_hash?: string
+          role?: Database["public"]["Enums"]["admin_role"]
+          updated_at?: string
+        }
+        Relationships: []
+      }
       bookings: {
         Row: {
           branch: string
@@ -227,13 +319,27 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      authenticate_admin: {
+        Args: { email_input: string; password_input: string }
+        Returns: {
+          admin_id: string
+          email: string
+          name: string
+          role: Database["public"]["Enums"]["admin_role"]
+          is_active: boolean
+        }[]
+      }
+      create_admin_session: {
+        Args: { admin_id_input: string }
+        Returns: string
+      }
       generate_voucher_code: {
         Args: Record<PropertyKey, never>
         Returns: string
       }
     }
     Enums: {
-      [_ in never]: never
+      admin_role: "super_admin" | "admin" | "moderator"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -348,6 +454,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      admin_role: ["super_admin", "admin", "moderator"],
+    },
   },
 } as const
