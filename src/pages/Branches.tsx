@@ -7,11 +7,7 @@ const Branches = () => {
     name: "The Hub Karen",
     address: "Upper Ground Floor, The Hub Mall Karen, Behind Nairobi Sports House, Next to Jump",
     phone: "+254 710 904 327",
-    hours: {
-      weekdays: "Monday - Friday: 9:00 AM - 6:00 PM",
-      saturday: "Saturday: 10:00 AM - 5:00 PM",
-      sunday: "Sunday: 12:00 PM - 4:00 PM"
-    },
+    hours: "Every day: 10:00 AM - 7:30 PM (Including holidays)",
     features: [
       "Premium AI massage chairs",
       "Professional wellness consultation",
@@ -88,10 +84,8 @@ const Branches = () => {
                       <Clock className="h-5 w-5 mr-3 text-coral" />
                       <span className="font-semibold">Operating Hours</span>
                     </div>
-                    <div className="ml-8 text-gray-300 space-y-1">
-                      <p>{currentBranch.hours.weekdays}</p>
-                      <p>{currentBranch.hours.saturday}</p>
-                      <p>{currentBranch.hours.sunday}</p>
+                    <div className="ml-8 text-gray-300">
+                      <p>{currentBranch.hours}</p>
                     </div>
                   </div>
 

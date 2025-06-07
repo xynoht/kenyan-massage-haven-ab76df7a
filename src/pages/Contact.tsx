@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -124,9 +123,8 @@ const Contact = () => {
                   <div>
                     <h3 className="text-xl font-semibold text-white mb-2">Operating Hours</h3>
                     <div className="text-gray-300">
-                      <p>Monday - Friday: 9:00 AM - 6:00 PM</p>
-                      <p>Saturday: 10:00 AM - 5:00 PM</p>
-                      <p>Sunday: 12:00 PM - 4:00 PM</p>
+                      <p>Every day: 10:00 AM - 7:30 PM</p>
+                      <p className="text-sm text-coral">(Including holidays)</p>
                     </div>
                   </div>
                 </div>
