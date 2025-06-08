@@ -12,13 +12,13 @@ const Footer = () => {
             <div className="flex items-center space-x-2 mb-4">
               <img 
                 src="/lovable-uploads/e5598de2-23f3-4b89-8d22-bc28b1986003.png" 
-                alt="Priella Massage Therapy Station" 
+                alt="PriElla Massage Therapy Centre" 
                 className="h-10 w-10"
               />
               <span className="text-gold text-xl font-bold">PRIELLA</span>
             </div>
             <p className="text-gray-300 mb-6 max-w-md">
-              Premium AI-powered massage therapy station in Nairobi. Experience luxury wellness with cutting-edge massage chair technology.
+              Premium automated massage therapy centre in Nairobi. Experience luxury wellness with cutting-edge automated massage chair technology.
             </p>
             <div className="space-y-2">
               <div className="flex items-center text-gray-300">
@@ -103,7 +103,7 @@ const Footer = () => {
         </div>
 
         <div className="border-t border-gold/20 mt-8 pt-8 text-center text-gray-400">
-          <p>&copy; 2024 Priella Massage Therapy Station. All rights reserved.</p>
+          <p>&copy; 2024 PriElla Massage Therapy Centre. All rights reserved.</p>
         </div>
       </div>
     </footer>

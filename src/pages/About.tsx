@@ -9,9 +9,9 @@ const About = () => {
       <section className="py-20 bg-gradient-to-b from-gray-900 to-black">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h1 className="text-5xl font-bold text-gold mb-6">About Priella</h1>
+            <h1 className="text-5xl font-bold text-gold mb-6">About PriElla</h1>
             <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-              Pioneering the future of wellness in Nairobi with AI-powered massage therapy technology.
+              Pioneering the future of wellness in Nairobi with automated massage therapy technology.
             </p>
             <div className="w-24 h-1 bg-coral mx-auto mt-8"></div>
           </div>
@@ -25,12 +25,12 @@ const About = () => {
             <div>
               <h2 className="text-4xl font-bold text-gold mb-6">Our Story</h2>
               <p className="text-gray-300 mb-6 text-lg leading-relaxed">
-                Priella Massage Therapy Station was born from a vision to make premium wellness accessible 
+                PriElla Massage Therapy Centre was born from a vision to make premium wellness accessible 
                 to everyone in Nairobi. Founded by wellness enthusiast Doris Tochiu Imaria, we recognized 
                 the growing need for stress relief and self-care in our fast-paced urban environment.
               </p>
               <p className="text-gray-300 mb-6 text-lg leading-relaxed">
-                By combining cutting-edge AI technology with the therapeutic benefits of massage therapy, 
+                By combining cutting-edge automated technology with the therapeutic benefits of massage therapy, 
                 we've created a unique wellness experience that delivers professional-quality massages 
                 in a convenient, accessible format.
               </p>
@@ -113,7 +113,7 @@ const About = () => {
               <h2 className="text-4xl font-bold text-gold mb-6">Premium Location</h2>
               <p className="text-gray-300 mb-6 text-lg leading-relaxed">
                 Situated in The Hub Karen, one of Nairobi's most prestigious business centers, 
-                Priella offers a serene escape from the bustling city life. Our location provides 
+                PriElla offers a serene escape from the bustling city life. Our location provides 
                 easy access, ample parking, and a professional environment perfect for your wellness journey.
               </p>
               <div className="space-y-4">
@@ -147,10 +147,10 @@ const About = () => {
       {/* Customer Experience */}
       <section className="py-20 bg-gradient-to-r from-coral to-gold">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-4xl font-bold text-black mb-6">The Priella Experience</h2>
+          <h2 className="text-4xl font-bold text-black mb-6">The PriElla Experience</h2>
           <p className="text-xl text-black/80 mb-8 leading-relaxed">
-            From the moment you step into our wellness station, you'll experience a journey of relaxation 
-            and rejuvenation designed to refresh your mind, body, and spirit. Our AI-powered massage chairs 
+            From the moment you step into our wellness centre, you'll experience a journey of relaxation 
+            and rejuvenation designed to refresh your mind, body, and spirit. Our automated massage chairs 
             provide a personalized experience that adapts to your unique needs, ensuring every session is 
             perfectly tailored for maximum benefit.
           </p>

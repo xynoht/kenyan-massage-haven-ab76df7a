@@ -1,3 +1,4 @@
+
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -16,7 +17,7 @@ const Index = () => {
   const testimonials = [
     {
       name: "Sarah Johnson",
-      quote: "The AI massage chairs at Priella are incredible! I feel completely relaxed and rejuvenated after every session.",
+      quote: "The automated massage chairs at PriElla are incredible! I feel completely relaxed and rejuvenated after every session.",
       rating: 5
     },
     {
@@ -26,7 +27,7 @@ const Index = () => {
     },
     {
       name: "Grace Wanjiku",
-      quote: "I visit Priella weekly now. It's become my go-to place for stress relief and self-care.",
+      quote: "I visit PriElla weekly now. It's become my go-to place for stress relief and self-care.",
       rating: 5
     }
   ];
@@ -61,7 +62,7 @@ const Index = () => {
           <div className="text-center max-w-4xl mx-auto px-4">
             <img 
               src="/lovable-uploads/e5598de2-23f3-4b89-8d22-bc28b1986003.png" 
-              alt="Priella Logo" 
+              alt="PriElla Logo" 
               className="h-32 w-32 mx-auto mb-8 animate-fade-in"
             />
             <h1 className="text-5xl md:text-7xl font-bold text-gold mb-6 animate-fade-in">
@@ -71,7 +72,7 @@ const Index = () => {
               Relax. Recharge. Revive.
             </p>
             <p className="text-xl text-white mb-8 max-w-2xl mx-auto animate-fade-in">
-              Experience the future of wellness with our AI-powered massage chairs. 
+              Experience the future of wellness with our automated massage chairs. 
               Premium relaxation in the heart of Nairobi.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center animate-fade-in">
@@ -109,7 +110,7 @@ const Index = () => {
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-gold mb-4">Our Services</h2>
             <p className="text-xl text-gray-300 max-w-2xl mx-auto">
-              Choose from our range of AI-powered massage sessions designed for your perfect relaxation experience.
+              Choose from our range of automated massage sessions designed for your perfect relaxation experience.
             </p>
           </div>
           
@@ -141,13 +142,13 @@ const Index = () => {
       <section className="py-20 bg-black">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gold mb-4">Why Choose Priella?</h2>
-            <p className="text-xl text-gray-300">Experience the benefits of AI-powered wellness technology</p>
+            <h2 className="text-4xl font-bold text-gold mb-4">Why Choose PriElla?</h2>
+            <p className="text-xl text-gray-300">Experience the benefits of automated wellness technology</p>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {[
-              { icon: Sparkles, title: "AI Technology", description: "Advanced massage algorithms" },
+              { icon: Sparkles, title: "Automated Technology", description: "Advanced massage programs" },
               { icon: Users, title: "Expert Care", description: "Professional wellness guidance" },
               { icon: Clock, title: "Flexible Sessions", description: "15, 30, or 45-minute options" },
               { icon: Star, title: "Premium Experience", description: "Luxury in the heart of Nairobi" }
@@ -203,7 +204,7 @@ const Index = () => {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-4xl font-bold text-black mb-6">Ready to Experience Premium Wellness?</h2>
           <p className="text-xl text-black/80 mb-8">
-            Book your session today and discover the future of relaxation at Priella Massage Therapy Station.
+            Book your session today and discover the future of relaxation at PriElla Massage Therapy Centre.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link to="/book">

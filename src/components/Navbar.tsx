@@ -30,7 +30,7 @@ const Navbar = () => {
           <Link to="/" className="flex items-center space-x-2">
             <img 
               src="/lovable-uploads/e5598de2-23f3-4b89-8d22-bc28b1986003.png" 
-              alt="Priella Massage Therapy Station" 
+              alt="PriElla Massage Therapy Centre" 
               className="h-12 w-12"
             />
             <span className="text-gold text-xl font-bold">PRIELLA</span>
