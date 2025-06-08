@@ -114,7 +114,7 @@ const PaymentConfirmation = () => {
       // Navigate back to appropriate page
       setTimeout(() => {
         if (type === 'booking') {
-          navigate('/book');
+          navigate('/book-massage');
         } else {
           navigate('/gift-voucher');
         }
@@ -157,8 +157,8 @@ const PaymentConfirmation = () => {
                 <div className="bg-gradient-to-r from-coral to-gold p-6 rounded-lg text-black">
                   <h3 className="text-xl font-bold mb-4">Payment Details</h3>
                   <div className="space-y-2">
-                    <p><strong>Paybill Number:</strong> 522522</p>
-                    <p><strong>Account Number:</strong> 2037717</p>
+                    <p><strong>Pay Bill Number:</strong> 880100</p>
+                    <p><strong>Account Number:</strong> 8504260017</p>
                     <p><strong>Amount:</strong> Ksh {amount}</p>
                     <p><strong>Reference:</strong> {referenceId.slice(0, 8)}</p>
                   </div>
@@ -170,8 +170,8 @@ const PaymentConfirmation = () => {
                     <li>Go to M-Pesa on your phone</li>
                     <li>Select "Lipa na M-Pesa"</li>
                     <li>Select "Pay Bill"</li>
-                    <li>Enter Business Number: <strong className="text-coral">522522</strong></li>
-                    <li>Enter Account Number: <strong className="text-coral">2037717</strong></li>
+                    <li>Enter Pay Bill Number: <strong className="text-coral">880100</strong></li>
+                    <li>Enter Account Number: <strong className="text-coral">8504260017</strong></li>
                     <li>Enter Amount: <strong className="text-coral">Ksh {amount}</strong></li>
                     <li>Enter your M-Pesa PIN</li>
                     <li>Take a screenshot of the confirmation message</li>

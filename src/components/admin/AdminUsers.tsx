@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -106,7 +107,7 @@ const AdminUsers = ({ adminData }: AdminUsersProps) => {
     }
 
     try {
-      // Use a custom RPC function to create user with hashed password
+      // Call the RPC function directly
       const { data, error } = await supabase.rpc('create_admin_user', {
         email_input: newUser.email,
         password_input: newUser.password,

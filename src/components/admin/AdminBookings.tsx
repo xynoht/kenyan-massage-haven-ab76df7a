@@ -1,13 +1,13 @@
-
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, Phone, Clock, MapPin, User, CheckCircle, XCircle } from "lucide-react";
+import { Calendar, Phone, Clock, MapPin, User, CheckCircle, XCircle, Eye } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
+import BookingDetails from "./BookingDetails";
 
 interface Booking {
   id: string;
@@ -34,6 +34,8 @@ const AdminBookings = ({ onStatsUpdate }: AdminBookingsProps) => {
   const [isLoading, setIsLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState("all");
   const [dateFilter, setDateFilter] = useState("all");
+  const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
+  const [showDetails, setShowDetails] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -143,6 +145,16 @@ const AdminBookings = ({ onStatsUpdate }: AdminBookingsProps) => {
     }
   };
 
+  const openBookingDetails = (booking: Booking) => {
+    setSelectedBooking(booking);
+    setShowDetails(true);
+  };
+
+  const closeBookingDetails = () => {
+    setSelectedBooking(null);
+    setShowDetails(false);
+  };
+
   if (isLoading) {
     return (
       <Card className="bg-gray-800 border-gold/20">
@@ -208,7 +220,7 @@ const AdminBookings = ({ onStatsUpdate }: AdminBookingsProps) => {
           filteredBookings.map((booking) => (
             <Card key={booking.id} className="bg-gray-800 border-gold/20">
               <CardContent className="p-6">
-                <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
+                <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
                   {/* Customer Info */}
                   <div className="space-y-2">
                     <div className="flex items-center text-white">
@@ -251,6 +263,19 @@ const AdminBookings = ({ onStatsUpdate }: AdminBookingsProps) => {
                     <div className="text-xs text-gray-400">
                       Booked: {format(new Date(booking.created_at), 'MMM dd, HH:mm')}
                     </div>
+                  </div>
+
+                  {/* View Details */}
+                  <div className="flex flex-col space-y-2">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => openBookingDetails(booking)}
+                      className="border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white"
+                    >
+                      <Eye className="h-4 w-4 mr-1" />
+                      View Details
+                    </Button>
                   </div>
 
                   {/* Actions */}
@@ -299,6 +324,13 @@ const AdminBookings = ({ onStatsUpdate }: AdminBookingsProps) => {
           ))
         )}
       </div>
+
+      {/* Booking Details Modal */}
+      <BookingDetails
+        booking={selectedBooking}
+        isOpen={showDetails}
+        onClose={closeBookingDetails}
+      />
     </div>
   );
 };

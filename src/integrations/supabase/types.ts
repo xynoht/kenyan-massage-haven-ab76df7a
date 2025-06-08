@@ -333,6 +333,15 @@ export type Database = {
         Args: { admin_id_input: string }
         Returns: string
       }
+      create_admin_user: {
+        Args: {
+          email_input: string
+          password_input: string
+          name_input: string
+          role_input: Database["public"]["Enums"]["admin_role"]
+        }
+        Returns: string
+      }
       generate_voucher_code: {
         Args: Record<PropertyKey, never>
         Returns: string

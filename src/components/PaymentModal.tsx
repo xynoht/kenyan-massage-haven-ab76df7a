@@ -64,7 +64,7 @@ const PaymentModal = ({
               <div className="space-y-3">
                 <div className="flex justify-between items-center bg-white rounded p-3">
                   <div>
-                    <p className="text-sm text-gray-600">Paybill Number</p>
+                    <p className="text-sm text-gray-600">Pay Bill Number</p>
                     <p className="font-mono text-lg font-bold">{paybillNumber}</p>
                   </div>
                   <Button
@@ -116,7 +116,7 @@ const PaymentModal = ({
                   <li>Go to M-Pesa menu</li>
                   <li>Select "Lipa na M-Pesa"</li>
                   <li>Select "Pay Bill"</li>
-                  <li>Enter Paybill Number: <strong>{paybillNumber}</strong></li>
+                  <li>Enter Pay Bill Number: <strong>{paybillNumber}</strong></li>
                   <li>Enter Account Number: <strong>{accountNumber}</strong></li>
                   <li>Enter Amount: <strong>KSh {amount.toLocaleString()}</strong></li>
                   <li>Enter your M-Pesa PIN</li>
