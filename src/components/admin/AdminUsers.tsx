@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -107,13 +106,12 @@ const AdminUsers = ({ adminData }: AdminUsersProps) => {
     }
 
     try {
-      // Generate password hash using SQL function
-      const { data, error } = await supabase.rpc('sql', {
-        sql: `
-          INSERT INTO public.admin_users (email, password_hash, name, role) 
-          VALUES ('${newUser.email}', crypt('${newUser.password}', gen_salt('bf')), '${newUser.name}', '${newUser.role}')
-          RETURNING id, email, name, role, is_active, created_at;
-        `
+      // Use a custom RPC function to create user with hashed password
+      const { data, error } = await supabase.rpc('create_admin_user', {
+        email_input: newUser.email,
+        password_input: newUser.password,
+        name_input: newUser.name,
+        role_input: newUser.role
       });
 
       if (error) throw error;
