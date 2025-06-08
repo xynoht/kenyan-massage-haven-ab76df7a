@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -10,6 +9,9 @@ import { Users, Plus, Edit, Shield, UserCheck, UserX, Eye, EyeOff } from "lucide
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
+import type { Database } from "@/integrations/supabase/types";
+
+type AdminRole = Database["public"]["Enums"]["admin_role"];
 
 interface AdminUser {
   id: string;
@@ -40,7 +42,7 @@ const AdminUsers = ({ adminData }: AdminUsersProps) => {
   const [newUser, setNewUser] = useState({
     email: "",
     name: "",
-    role: "admin",
+    role: "admin" as AdminRole,
     password: ""
   });
   const [showPassword, setShowPassword] = useState(false);
@@ -122,7 +124,7 @@ const AdminUsers = ({ adminData }: AdminUsersProps) => {
         description: "New admin user created successfully.",
       });
 
-      setNewUser({ email: "", name: "", role: "admin", password: "" });
+      setNewUser({ email: "", name: "", role: "admin" as AdminRole, password: "" });
       setShowAddForm(false);
       fetchUsers();
     } catch (error) {
