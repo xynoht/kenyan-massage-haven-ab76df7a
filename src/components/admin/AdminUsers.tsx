@@ -224,7 +224,7 @@ const AdminUsers = ({ adminData }: AdminUsersProps) => {
                 
                 <div>
                   <Label className="text-white">Role</Label>
-                  <Select value={newUser.role} onValueChange={(value) => setNewUser({...newUser, role: value})}>
+                  <Select value={newUser.role} onValueChange={(value: AdminRole) => setNewUser({...newUser, role: value})}>
                     <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
                       <SelectValue />
                     </SelectTrigger>
