@@ -21,6 +21,7 @@ import Blog from "./pages/Blog";
 import Terms from "./pages/Terms";
 import Privacy from "./pages/Privacy";
 import Refund from "./pages/Refund";
+import Management from "./pages/Management";
 import NotFound from "./pages/NotFound";
 import AdminDashboard from "./pages/AdminDashboard";
 
@@ -49,6 +50,7 @@ const App = () => (
                     <Route path="/gallery" element={<Gallery />} />
                     <Route path="/testimonials" element={<Testimonials />} />
                     <Route path="/contact" element={<Contact />} />
+                    <Route path="/book" element={<BookMassage />} />
                     <Route path="/book-massage" element={<BookMassage />} />
                     <Route path="/gift-voucher" element={<GiftVoucher />} />
                     <Route path="/payment-confirmation" element={<PaymentConfirmation />} />
@@ -57,6 +59,7 @@ const App = () => (
                     <Route path="/terms" element={<Terms />} />
                     <Route path="/privacy" element={<Privacy />} />
                     <Route path="/refund" element={<Refund />} />
+                    <Route path="/management" element={<Management />} />
                     <Route path="*" element={<NotFound />} />
                   </Routes>
                 </main>

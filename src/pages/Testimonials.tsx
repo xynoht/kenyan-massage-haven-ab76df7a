@@ -139,7 +139,7 @@ const Testimonials = () => {
               { value: "98%", label: "Client Satisfaction Rate" },
               { value: "87%", label: "Return Within 30 Days" },
               { value: "4.9/5", label: "Average Rating" },
-              { value: "1000+", label: "Happy Clients" }
+              { value: "100+", label: "Happy Clients" }
             ].map((stat, index) => (
               <div key={index} className="text-center">
                 <p className="text-4xl md:text-5xl font-bold text-coral mb-2">{stat.value}</p>
