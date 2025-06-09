@@ -1,7 +1,7 @@
 
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Menu, X } from "lucide-react";
+import { Menu, X, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const Navbar = () => {
@@ -60,6 +60,16 @@ const Navbar = () => {
                   Gift Voucher
                 </Button>
               </Link>
+              <Link to="/admin">
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  className="border-gray-500 text-gray-400 hover:bg-gray-500 hover:text-white text-xs px-3 py-1"
+                >
+                  <Shield className="h-3 w-3 mr-1" />
+                  Admin
+                </Button>
+              </Link>
             </div>
           </div>
 
@@ -100,6 +110,12 @@ const Navbar = () => {
               <Link to="/gift-voucher" onClick={() => setIsOpen(false)}>
                 <Button variant="outline" className="w-full border-gold text-gold hover:bg-gold hover:text-black">
                   Gift Voucher
+                </Button>
+              </Link>
+              <Link to="/admin" onClick={() => setIsOpen(false)}>
+                <Button variant="outline" className="w-full border-gray-500 text-gray-400 hover:bg-gray-500 hover:text-white">
+                  <Shield className="h-4 w-4 mr-2" />
+                  Admin Dashboard
                 </Button>
               </Link>
               <Link to="/terms" onClick={() => setIsOpen(false)}>

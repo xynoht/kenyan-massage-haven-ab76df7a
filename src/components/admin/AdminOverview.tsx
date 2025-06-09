@@ -10,6 +10,7 @@ import {
   ArrowRight
 } from "lucide-react";
 import AdminAnalytics from "./AdminAnalytics";
+import TestDataManager from "./TestDataManager";
 
 interface AdminOverviewProps {
   stats: {
@@ -25,6 +26,9 @@ interface AdminOverviewProps {
 const AdminOverview = ({ stats }: AdminOverviewProps) => {
   return (
     <div className="space-y-6">
+      {/* Test Data Manager */}
+      <TestDataManager />
+
       {/* Quick Overview Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <Card className="bg-gray-800 border-gold/20">
