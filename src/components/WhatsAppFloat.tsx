@@ -3,6 +3,7 @@ import { MessageCircle } from "lucide-react";
 
 const WhatsAppFloat = () => {
   const handleWhatsAppClick = () => {
+    // Using the main business WhatsApp number
     window.open("https://wa.me/254710904327", "_blank", "noopener,noreferrer");
   };
 

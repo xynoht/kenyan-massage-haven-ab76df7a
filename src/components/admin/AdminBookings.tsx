@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, Phone, Clock, MapPin, User, CheckCircle, XCircle, Eye, AlertCircle, RefreshCw, MessageSquare } from "lucide-react";
+import { Calendar, Phone, Clock, MapPin, User, CheckCircle, XCircle, Eye, AlertCircle, RefreshCw } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
@@ -127,74 +127,31 @@ const AdminBookings = ({ onStatsUpdate }: AdminBookingsProps) => {
     setFilteredBookings(filtered);
   };
 
-  const sendBookingConfirmation = async (booking: Booking) => {
-    try {
-      console.log('Sending booking confirmation for:', booking.id);
-      
-      const response = await fetch('/api/send-booking-confirmation', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          bookingId: booking.id,
-          customerName: booking.name,
-          customerPhone: booking.phone,
-          customerEmail: booking.email,
-          date: booking.date,
-          time: booking.time,
-          duration: booking.duration,
-          branch: booking.branch,
-          totalAmount: booking.total_amount,
-        }),
-      });
-
-      if (response.ok) {
-        const result = await response.json();
-        console.log('Confirmation sent successfully:', result);
-        
-        toast({
-          title: "Confirmation Sent",
-          description: `Booking confirmation has been sent to ${booking.name} via ${result.whatsappSent ? 'WhatsApp' : result.emailSent ? 'email' : 'SMS'}.`,
-        });
-      } else {
-        throw new Error('Failed to send confirmation');
-      }
-    } catch (error) {
-      console.error('Error sending booking confirmation:', error);
-      toast({
-        title: "Notification Error",
-        description: "Failed to send booking confirmation. The booking status has been updated.",
-        variant: "destructive",
-      });
-    }
-  };
-
   const updateBookingStatus = async (bookingId: string, newStatus: string) => {
     try {
+      console.log(`Updating booking ${bookingId} status to ${newStatus}`);
+      
       const { error } = await supabase
         .from('bookings')
         .update({ status: newStatus })
         .eq('id', bookingId);
 
-      if (error) throw error;
-
-      // If confirming a booking, send notification
-      if (newStatus === 'confirmed') {
-        const booking = bookings.find(b => b.id === bookingId);
-        if (booking) {
-          await sendBookingConfirmation(booking);
-        }
+      if (error) {
+        console.error('Error updating booking status:', error);
+        throw error;
       }
 
+      console.log('Booking status updated successfully');
+      
       toast({
         title: "Status Updated",
         description: `Booking status changed to ${newStatus}.`,
       });
 
-      fetchBookings();
+      // Refresh the bookings list
+      await fetchBookings();
       onStatsUpdate();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error updating booking status:', error);
       toast({
         title: "Error",
@@ -434,7 +391,7 @@ const AdminBookings = ({ onStatsUpdate }: AdminBookingsProps) => {
                           className="bg-green-600 hover:bg-green-700 text-white"
                         >
                           <CheckCircle className="h-4 w-4 mr-1" />
-                          Confirm & Notify
+                          Confirm
                         </Button>
                         <Button
                           size="sm"
@@ -447,24 +404,13 @@ const AdminBookings = ({ onStatsUpdate }: AdminBookingsProps) => {
                       </>
                     )}
                     {booking.status === 'confirmed' && (
-                      <>
-                        <Button
-                          size="sm"
-                          onClick={() => updateBookingStatus(booking.id, 'completed')}
-                          className="bg-blue-600 hover:bg-blue-700 text-white"
-                        >
-                          Mark Complete
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => sendBookingConfirmation(booking)}
-                          className="border-green-500 text-green-500 hover:bg-green-500 hover:text-white"
-                        >
-                          <MessageSquare className="h-4 w-4 mr-1" />
-                          Resend Notice
-                        </Button>
-                      </>
+                      <Button
+                        size="sm"
+                        onClick={() => updateBookingStatus(booking.id, 'completed')}
+                        className="bg-blue-600 hover:bg-blue-700 text-white"
+                      >
+                        Mark Complete
+                      </Button>
                     )}
                   </div>
                 </div>

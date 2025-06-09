@@ -1,9 +1,23 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Mail, Phone, MapPin, User } from "lucide-react";
+import { Mail, Phone, MapPin, User, MessageCircle } from "lucide-react";
 
 const Management = () => {
+  const handleEmailClick = (email: string) => {
+    window.open(`mailto:${email}`, '_blank');
+  };
+
+  const handlePhoneClick = (phoneNumber: string) => {
+    window.open(`tel:${phoneNumber}`, '_blank');
+  };
+
+  const handleWhatsAppClick = (phoneNumber: string) => {
+    // Format phone number for WhatsApp (remove any spaces, dashes, etc.)
+    const cleanNumber = phoneNumber.replace(/[^\d+]/g, '');
+    window.open(`https://wa.me/${cleanNumber}`, '_blank');
+  };
+
   return (
     <div className="pt-16 min-h-screen bg-black">
       {/* Header */}
@@ -64,13 +78,28 @@ const Management = () => {
                   </div>
 
                   <div className="flex flex-col sm:flex-row gap-4">
-                    <Button className="bg-coral hover:bg-coral/90 text-black">
+                    <Button 
+                      onClick={() => handleEmailClick('tochiuimaria@gmail.com')}
+                      className="bg-coral hover:bg-coral/90 text-black"
+                    >
                       <Mail className="h-4 w-4 mr-2" />
                       Send Email
                     </Button>
-                    <Button variant="outline" className="border-gold text-gold hover:bg-gold hover:text-black">
+                    <Button 
+                      onClick={() => handlePhoneClick('+254710904327')}
+                      variant="outline" 
+                      className="border-gold text-gold hover:bg-gold hover:text-black"
+                    >
                       <Phone className="h-4 w-4 mr-2" />
                       Call Now
+                    </Button>
+                    <Button 
+                      onClick={() => handleWhatsAppClick('+254710904327')}
+                      variant="outline" 
+                      className="border-green-500 text-green-500 hover:bg-green-500 hover:text-white"
+                    >
+                      <MessageCircle className="h-4 w-4 mr-2" />
+                      WhatsApp
                     </Button>
                   </div>
                 </CardContent>
@@ -122,13 +151,28 @@ const Management = () => {
                   </div>
 
                   <div className="flex flex-col sm:flex-row gap-4">
-                    <Button className="bg-coral hover:bg-coral/90 text-black">
+                    <Button 
+                      onClick={() => handleEmailClick('anthonygeoffrey87@gmail.com')}
+                      className="bg-coral hover:bg-coral/90 text-black"
+                    >
                       <Mail className="h-4 w-4 mr-2" />
                       Contact
                     </Button>
-                    <Button variant="outline" className="border-gold text-gold hover:bg-gold hover:text-black">
+                    <Button 
+                      onClick={() => handlePhoneClick('+254724946613')}
+                      variant="outline" 
+                      className="border-gold text-gold hover:bg-gold hover:text-black"
+                    >
                       <Phone className="h-4 w-4 mr-2" />
                       Call
+                    </Button>
+                    <Button 
+                      onClick={() => handleWhatsAppClick('+254724946613')}
+                      variant="outline" 
+                      className="border-green-500 text-green-500 hover:bg-green-500 hover:text-white"
+                    >
+                      <MessageCircle className="h-4 w-4 mr-2" />
+                      WhatsApp
                     </Button>
                   </div>
                 </CardContent>
@@ -228,7 +272,11 @@ const Management = () => {
             our commitment to wellness and exceptional customer service. Join us in revolutionizing 
             the wellness industry in Nairobi.
           </p>
-          <Button size="lg" className="bg-black hover:bg-gray-800 text-white px-8 py-4 text-lg">
+          <Button 
+            onClick={() => handleEmailClick('tochiuimaria@gmail.com')}
+            size="lg" 
+            className="bg-black hover:bg-gray-800 text-white px-8 py-4 text-lg"
+          >
             <Mail className="h-5 w-5 mr-2" />
             Contact Us About Opportunities
           </Button>
