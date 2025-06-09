@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { CalendarIcon, Clock, MapPin } from "lucide-react";
+import { CalendarIcon, Clock, MapPin, AlertCircle } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
@@ -26,6 +26,7 @@ const BookMassage = () => {
     branch: "",
     notes: ""
   });
+  const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -42,13 +43,141 @@ const BookMassage = () => {
     { value: "45", label: "45 Minutes - Ksh 1,500", price: 1500 }
   ];
 
+  const validateForm = () => {
+    const newErrors: Record<string, string> = {};
+
+    // Name validation
+    if (!formData.name.trim()) {
+      newErrors.name = "Full name is required";
+    } else if (formData.name.trim().length < 2) {
+      newErrors.name = "Name must be at least 2 characters";
+    } else if (!/^[a-zA-Z\s]+$/.test(formData.name.trim())) {
+      newErrors.name = "Name can only contain letters and spaces";
+    }
+
+    // Phone validation
+    if (!formData.phone.trim()) {
+      newErrors.phone = "Phone number is required";
+    } else {
+      const phoneRegex = /^(\+254|254|0)?[17]\d{8}$/;
+      const cleanPhone = formData.phone.replace(/[\s-]/g, '');
+      if (!phoneRegex.test(cleanPhone)) {
+        newErrors.phone = "Please enter a valid Kenyan phone number";
+      }
+    }
+
+    // Email validation (optional but must be valid if provided)
+    if (formData.email.trim()) {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(formData.email.trim())) {
+        newErrors.email = "Please enter a valid email address";
+      }
+    }
+
+    // Date validation
+    if (!date) {
+      newErrors.date = "Please select a date";
+    } else {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const selectedDate = new Date(date);
+      selectedDate.setHours(0, 0, 0, 0);
+      
+      if (selectedDate < today) {
+        newErrors.date = "Please select a future date";
+      }
+      
+      // Check if date is too far in the future (3 months)
+      const maxDate = new Date();
+      maxDate.setMonth(maxDate.getMonth() + 3);
+      if (selectedDate > maxDate) {
+        newErrors.date = "Bookings can only be made up to 3 months in advance";
+      }
+    }
+
+    // Time validation
+    if (!formData.time) {
+      newErrors.time = "Please select a time";
+    }
+
+    // Duration validation
+    if (!formData.duration) {
+      newErrors.duration = "Please select a duration";
+    }
+
+    // Branch validation
+    if (!formData.branch) {
+      newErrors.branch = "Please select a branch";
+    }
+
+    // Notes validation (optional but length limit)
+    if (formData.notes && formData.notes.length > 500) {
+      newErrors.notes = "Notes must be less than 500 characters";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const checkAvailability = async () => {
+    try {
+      const { data: existingBookings, error } = await supabase
+        .from('bookings')
+        .select('time, duration')
+        .eq('date', format(date!, 'yyyy-MM-dd'))
+        .eq('branch', formData.branch)
+        .in('status', ['pending', 'confirmed']);
+
+      if (error) throw error;
+
+      // Check for time conflicts
+      const selectedTime = formData.time;
+      const selectedDuration = parseInt(formData.duration);
+      
+      for (const booking of existingBookings) {
+        const existingTime = booking.time;
+        const existingDuration = booking.duration;
+        
+        // Simple time conflict check (can be improved)
+        if (existingTime === selectedTime) {
+          return false;
+        }
+      }
+      
+      return true;
+    } catch (error) {
+      console.error('Availability check error:', error);
+      return true; // Allow booking if check fails
+    }
+  };
+
+  const sendSimpleNotification = (bookingData: any) => {
+    // Simple customer notification without API
+    const message = `Thank you ${bookingData.name}! Your booking has been received for ${format(date!, 'MMM dd, yyyy')} at ${bookingData.time}. We'll confirm shortly via ${bookingData.phone}.`;
+    
+    toast({
+      title: "Booking Submitted!",
+      description: message,
+      duration: 8000,
+    });
+
+    // Log notification for admin reference
+    console.log('Customer notification sent:', {
+      customer: bookingData.name,
+      phone: bookingData.phone,
+      date: format(date!, 'yyyy-MM-dd'),
+      time: bookingData.time,
+      message: message
+    });
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!date || !formData.name || !formData.phone || !formData.time || !formData.duration || !formData.branch) {
+    if (!validateForm()) {
       toast({
-        title: "Missing Information",
-        description: "Please fill in all required fields.",
+        title: "Please fix the errors",
+        description: "Check the form for validation errors and try again.",
         variant: "destructive",
       });
       return;
@@ -57,35 +186,55 @@ const BookMassage = () => {
     setIsSubmitting(true);
 
     try {
+      // Check availability
+      const isAvailable = await checkAvailability();
+      if (!isAvailable) {
+        toast({
+          title: "Time Slot Unavailable",
+          description: "The selected time slot is already booked. Please choose a different time.",
+          variant: "destructive",
+        });
+        setIsSubmitting(false);
+        return;
+      }
+
       const selectedDuration = durations.find(d => d.value === formData.duration);
       if (!selectedDuration) {
         throw new Error("Invalid duration selected");
       }
 
+      // Normalize phone number
+      let normalizedPhone = formData.phone.replace(/[\s-]/g, '');
+      if (normalizedPhone.startsWith('0')) {
+        normalizedPhone = '254' + normalizedPhone.substring(1);
+      } else if (!normalizedPhone.startsWith('254')) {
+        normalizedPhone = '254' + normalizedPhone;
+      }
+
       // Insert booking into database
+      const bookingData = {
+        name: formData.name.trim(),
+        phone: normalizedPhone,
+        email: formData.email.trim() || null,
+        date: format(date!, 'yyyy-MM-dd'),
+        time: formData.time,
+        duration: parseInt(formData.duration),
+        branch: formData.branch,
+        notes: formData.notes.trim() || null,
+        total_amount: selectedDuration.price,
+        status: 'pending'
+      };
+
       const { data: booking, error: bookingError } = await supabase
         .from('bookings')
-        .insert({
-          name: formData.name,
-          phone: formData.phone,
-          email: formData.email,
-          date: format(date, 'yyyy-MM-dd'),
-          time: formData.time,
-          duration: parseInt(formData.duration),
-          branch: formData.branch,
-          notes: formData.notes,
-          total_amount: selectedDuration.price,
-          status: 'pending'
-        })
+        .insert(bookingData)
         .select()
         .single();
 
       if (bookingError) throw bookingError;
 
-      toast({
-        title: "Booking Request Received!",
-        description: "Redirecting to payment confirmation...",
-      });
+      // Send simple notification
+      sendSimpleNotification(bookingData);
 
       // Redirect to payment confirmation page
       navigate(`/payment-confirmation?amount=${selectedDuration.price}&reference=${booking.id}&type=booking`);
@@ -136,9 +285,18 @@ const BookMassage = () => {
                           id="name"
                           value={formData.name}
                           onChange={(e) => setFormData({...formData, name: e.target.value})}
-                          className="bg-gray-700 border-gray-600 text-white"
+                          className={cn(
+                            "bg-gray-700 border-gray-600 text-white",
+                            errors.name && "border-red-500"
+                          )}
                           required
                         />
+                        {errors.name && (
+                          <div className="flex items-center mt-1 text-red-400 text-sm">
+                            <AlertCircle className="h-3 w-3 mr-1" />
+                            {errors.name}
+                          </div>
+                        )}
                       </div>
                       <div>
                         <Label htmlFor="phone" className="text-white">Phone Number *</Label>
@@ -147,10 +305,19 @@ const BookMassage = () => {
                           type="tel"
                           value={formData.phone}
                           onChange={(e) => setFormData({...formData, phone: e.target.value})}
-                          className="bg-gray-700 border-gray-600 text-white"
+                          className={cn(
+                            "bg-gray-700 border-gray-600 text-white",
+                            errors.phone && "border-red-500"
+                          )}
                           placeholder="+254 7XX XXX XXX"
                           required
                         />
+                        {errors.phone && (
+                          <div className="flex items-center mt-1 text-red-400 text-sm">
+                            <AlertCircle className="h-3 w-3 mr-1" />
+                            {errors.phone}
+                          </div>
+                        )}
                       </div>
                     </div>
 
@@ -161,21 +328,39 @@ const BookMassage = () => {
                         type="email"
                         value={formData.email}
                         onChange={(e) => setFormData({...formData, email: e.target.value})}
-                        className="bg-gray-700 border-gray-600 text-white"
+                        className={cn(
+                          "bg-gray-700 border-gray-600 text-white",
+                          errors.email && "border-red-500"
+                        )}
                       />
+                      {errors.email && (
+                        <div className="flex items-center mt-1 text-red-400 text-sm">
+                          <AlertCircle className="h-3 w-3 mr-1" />
+                          {errors.email}
+                        </div>
+                      )}
                     </div>
 
                     {/* Branch Selection */}
                     <div>
                       <Label className="text-white">Select Branch *</Label>
                       <Select value={formData.branch} onValueChange={(value) => setFormData({...formData, branch: value})}>
-                        <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
+                        <SelectTrigger className={cn(
+                          "bg-gray-700 border-gray-600 text-white",
+                          errors.branch && "border-red-500"
+                        )}>
                           <SelectValue placeholder="Choose location" />
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="the-hub-karen">The Hub, Karen</SelectItem>
                         </SelectContent>
                       </Select>
+                      {errors.branch && (
+                        <div className="flex items-center mt-1 text-red-400 text-sm">
+                          <AlertCircle className="h-3 w-3 mr-1" />
+                          {errors.branch}
+                        </div>
+                      )}
                     </div>
 
                     {/* Date Selection */}
@@ -187,7 +372,8 @@ const BookMassage = () => {
                             variant="outline"
                             className={cn(
                               "w-full justify-start text-left font-normal bg-gray-700 border-gray-600 text-white",
-                              !date && "text-gray-400"
+                              !date && "text-gray-400",
+                              errors.date && "border-red-500"
                             )}
                           >
                             <CalendarIcon className="mr-2 h-4 w-4" />
@@ -200,10 +386,22 @@ const BookMassage = () => {
                             selected={date}
                             onSelect={setDate}
                             initialFocus
-                            disabled={(date) => date < new Date()}
+                            disabled={(date) => {
+                              const today = new Date();
+                              today.setHours(0, 0, 0, 0);
+                              const maxDate = new Date();
+                              maxDate.setMonth(maxDate.getMonth() + 3);
+                              return date < today || date > maxDate;
+                            }}
                           />
                         </PopoverContent>
                       </Popover>
+                      {errors.date && (
+                        <div className="flex items-center mt-1 text-red-400 text-sm">
+                          <AlertCircle className="h-3 w-3 mr-1" />
+                          {errors.date}
+                        </div>
+                      )}
                     </div>
 
                     {/* Time and Duration */}
@@ -211,7 +409,10 @@ const BookMassage = () => {
                       <div>
                         <Label className="text-white">Select Time *</Label>
                         <Select value={formData.time} onValueChange={(value) => setFormData({...formData, time: value})}>
-                          <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
+                          <SelectTrigger className={cn(
+                            "bg-gray-700 border-gray-600 text-white",
+                            errors.time && "border-red-500"
+                          )}>
                             <SelectValue placeholder="Choose time" />
                           </SelectTrigger>
                           <SelectContent>
@@ -220,11 +421,20 @@ const BookMassage = () => {
                             ))}
                           </SelectContent>
                         </Select>
+                        {errors.time && (
+                          <div className="flex items-center mt-1 text-red-400 text-sm">
+                            <AlertCircle className="h-3 w-3 mr-1" />
+                            {errors.time}
+                          </div>
+                        )}
                       </div>
                       <div>
                         <Label className="text-white">Duration *</Label>
                         <Select value={formData.duration} onValueChange={(value) => setFormData({...formData, duration: value})}>
-                          <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
+                          <SelectTrigger className={cn(
+                            "bg-gray-700 border-gray-600 text-white",
+                            errors.duration && "border-red-500"
+                          )}>
                             <SelectValue placeholder="Choose duration" />
                           </SelectTrigger>
                           <SelectContent>
@@ -235,6 +445,12 @@ const BookMassage = () => {
                             ))}
                           </SelectContent>
                         </Select>
+                        {errors.duration && (
+                          <div className="flex items-center mt-1 text-red-400 text-sm">
+                            <AlertCircle className="h-3 w-3 mr-1" />
+                            {errors.duration}
+                          </div>
+                        )}
                       </div>
                     </div>
 
@@ -245,10 +461,25 @@ const BookMassage = () => {
                         id="notes"
                         value={formData.notes}
                         onChange={(e) => setFormData({...formData, notes: e.target.value})}
-                        className="bg-gray-700 border-gray-600 text-white"
+                        className={cn(
+                          "bg-gray-700 border-gray-600 text-white",
+                          errors.notes && "border-red-500"
+                        )}
                         placeholder="Any special requests or health considerations..."
                         rows={3}
+                        maxLength={500}
                       />
+                      <div className="flex justify-between items-center mt-1">
+                        <div>
+                          {errors.notes && (
+                            <div className="flex items-center text-red-400 text-sm">
+                              <AlertCircle className="h-3 w-3 mr-1" />
+                              {errors.notes}
+                            </div>
+                          )}
+                        </div>
+                        <span className="text-gray-400 text-sm">{formData.notes.length}/500</span>
+                      </div>
                     </div>
 
                     <Button 
