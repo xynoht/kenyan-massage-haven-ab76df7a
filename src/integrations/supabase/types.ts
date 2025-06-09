@@ -316,7 +316,60 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      booking_analytics: {
+        Row: {
+          avg_booking_value: number | null
+          cancelled_bookings: number | null
+          confirmed_bookings: number | null
+          date: string | null
+          pending_bookings: number | null
+          total_bookings: number | null
+          total_revenue: number | null
+          unique_customers: number | null
+        }
+        Relationships: []
+      }
+      branch_performance: {
+        Row: {
+          avg_booking_value: number | null
+          booking_percentage: number | null
+          branch: string | null
+          total_bookings: number | null
+          total_revenue: number | null
+          unique_customers: number | null
+        }
+        Relationships: []
+      }
+      daily_performance: {
+        Row: {
+          avg_booking_value: number | null
+          booking_count: number | null
+          date: string | null
+          day_of_week: number | null
+          revenue: number | null
+        }
+        Relationships: []
+      }
+      monthly_revenue_trends: {
+        Row: {
+          avg_booking_value: number | null
+          bookings_count: number | null
+          month: string | null
+          revenue: number | null
+          unique_customers: number | null
+        }
+        Relationships: []
+      }
+      service_duration_analytics: {
+        Row: {
+          avg_revenue_per_booking: number | null
+          booking_count: number | null
+          duration: number | null
+          percentage: number | null
+          total_revenue: number | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       authenticate_admin: {
@@ -345,6 +398,19 @@ export type Database = {
       generate_voucher_code: {
         Args: Record<PropertyKey, never>
         Returns: string
+      }
+      get_analytics_summary: {
+        Args: { start_date?: string; end_date?: string }
+        Returns: {
+          total_bookings: number
+          total_revenue: number
+          avg_booking_value: number
+          unique_customers: number
+          confirmed_bookings: number
+          pending_bookings: number
+          cancelled_bookings: number
+          growth_rate: number
+        }[]
       }
     }
     Enums: {
