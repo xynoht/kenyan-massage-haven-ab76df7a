@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import AdminLogin from "@/components/admin/AdminLogin";
 import AdminDashboard from "@/components/admin/AdminDashboard";
@@ -121,11 +120,14 @@ const AdminDashboardPage = () => {
       console.log('Logging out admin');
       if (adminData?.sessionToken) {
         // Try to invalidate session in database, but don't fail if it doesn't work
-        await supabase
+        const { error } = await supabase
           .from('admin_sessions')
           .delete()
-          .eq('session_token', adminData.sessionToken)
-          .catch(err => console.log('Note: Could not invalidate session in database:', err));
+          .eq('session_token', adminData.sessionToken);
+        
+        if (error) {
+          console.log('Note: Could not invalidate session in database:', error);
+        }
       }
     } catch (error) {
       console.error('Logout error:', error);
