@@ -180,20 +180,60 @@ export const clearTestData = async () => {
   try {
     console.log('Clearing all test data...');
 
-    // Clear all data from tables (comprehensive cleanup)
-    const tables = ['bookings', 'contact_messages', 'gift_vouchers', 'mpesa_transactions', 'payment_transactions'];
+    // Clear all data from tables individually with proper typing
+    const { error: bookingsError } = await supabase
+      .from('bookings')
+      .delete()
+      .neq('id', '00000000-0000-0000-0000-000000000000');
     
-    for (const table of tables) {
-      const { error } = await supabase
-        .from(table)
-        .delete()
-        .neq('id', '00000000-0000-0000-0000-000000000000'); // This condition ensures we delete all rows
-      
-      if (error) {
-        console.error(`Error clearing ${table}:`, error);
-      } else {
-        console.log(`Successfully cleared ${table} table`);
-      }
+    if (bookingsError) {
+      console.error('Error clearing bookings:', bookingsError);
+    } else {
+      console.log('Successfully cleared bookings table');
+    }
+
+    const { error: messagesError } = await supabase
+      .from('contact_messages')
+      .delete()
+      .neq('id', '00000000-0000-0000-0000-000000000000');
+    
+    if (messagesError) {
+      console.error('Error clearing contact_messages:', messagesError);
+    } else {
+      console.log('Successfully cleared contact_messages table');
+    }
+
+    const { error: vouchersError } = await supabase
+      .from('gift_vouchers')
+      .delete()
+      .neq('id', '00000000-0000-0000-0000-000000000000');
+    
+    if (vouchersError) {
+      console.error('Error clearing gift_vouchers:', vouchersError);
+    } else {
+      console.log('Successfully cleared gift_vouchers table');
+    }
+
+    const { error: mpesaError } = await supabase
+      .from('mpesa_transactions')
+      .delete()
+      .neq('id', '00000000-0000-0000-0000-000000000000');
+    
+    if (mpesaError) {
+      console.error('Error clearing mpesa_transactions:', mpesaError);
+    } else {
+      console.log('Successfully cleared mpesa_transactions table');
+    }
+
+    const { error: paymentsError } = await supabase
+      .from('payment_transactions')
+      .delete()
+      .neq('id', '00000000-0000-0000-0000-000000000000');
+    
+    if (paymentsError) {
+      console.error('Error clearing payment_transactions:', paymentsError);
+    } else {
+      console.log('Successfully cleared payment_transactions table');
     }
 
     console.log('All test data cleared successfully');
@@ -210,28 +250,39 @@ export const performSiteHealthCheck = async () => {
     console.log('Performing comprehensive site health check...');
     
     const healthReport = {
-      database: { status: 'checking', tables: {} },
+      database: { status: 'checking', tables: {} as Record<string, number> },
       authentication: { status: 'checking' },
       navigation: { status: 'checking' },
       adminDashboard: { status: 'checking' },
       forms: { status: 'checking' },
-      issues: [],
-      recommendations: []
+      issues: [] as string[],
+      recommendations: [] as string[]
     };
 
     // Test database connectivity
     try {
-      const { data: bookings } = await supabase.from('bookings').select('count', { count: 'exact' });
-      const { data: messages } = await supabase.from('contact_messages').select('count', { count: 'exact' });
-      const { data: vouchers } = await supabase.from('gift_vouchers').select('count', { count: 'exact' });
-      const { data: adminUsers } = await supabase.from('admin_users').select('count', { count: 'exact' });
+      const { count: bookingsCount } = await supabase
+        .from('bookings')
+        .select('*', { count: 'exact', head: true });
+      
+      const { count: messagesCount } = await supabase
+        .from('contact_messages')
+        .select('*', { count: 'exact', head: true });
+      
+      const { count: vouchersCount } = await supabase
+        .from('gift_vouchers')
+        .select('*', { count: 'exact', head: true });
+      
+      const { count: adminUsersCount } = await supabase
+        .from('admin_users')
+        .select('*', { count: 'exact', head: true });
       
       healthReport.database.status = 'healthy';
       healthReport.database.tables = {
-        bookings: bookings?.[0]?.count || 0,
-        messages: messages?.[0]?.count || 0,
-        vouchers: vouchers?.[0]?.count || 0,
-        adminUsers: adminUsers?.[0]?.count || 0
+        bookings: bookingsCount || 0,
+        messages: messagesCount || 0,
+        vouchers: vouchersCount || 0,
+        adminUsers: adminUsersCount || 0
       };
     } catch (error) {
       healthReport.database.status = 'error';
@@ -267,7 +318,7 @@ export const performSiteHealthCheck = async () => {
     return { 
       status: 'error', 
       message: 'Health check failed',
-      error: error.message 
+      error: error instanceof Error ? error.message : 'Unknown error'
     };
   }
 };

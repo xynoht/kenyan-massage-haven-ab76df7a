@@ -17,8 +17,37 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { performSiteHealthCheck } from "@/utils/testDataGenerator";
 
+interface HealthReportSuccess {
+  database: {
+    status: string;
+    tables: Record<string, number>;
+  };
+  authentication: {
+    status: string;
+  };
+  navigation: {
+    status: string;
+  };
+  adminDashboard: {
+    status: string;
+  };
+  forms: {
+    status: string;
+  };
+  issues: string[];
+  recommendations: string[];
+}
+
+interface HealthReportError {
+  status: string;
+  message: string;
+  error: string;
+}
+
+type HealthReport = HealthReportSuccess | HealthReportError;
+
 const SiteHealthReport = () => {
-  const [healthReport, setHealthReport] = useState(null);
+  const [healthReport, setHealthReport] = useState<HealthReport | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
@@ -28,16 +57,22 @@ const SiteHealthReport = () => {
       const report = await performSiteHealthCheck();
       setHealthReport(report);
       
-      if (report.issues && report.issues.length > 0) {
+      if (isSuccessReport(report) && report.issues && report.issues.length > 0) {
         toast({
           title: "Health Check Complete",
           description: `Found ${report.issues.length} potential issues to review.`,
           variant: "destructive",
         });
-      } else {
+      } else if (isSuccessReport(report)) {
         toast({
           title: "Health Check Complete",
           description: "Site appears to be healthy!",
+        });
+      } else {
+        toast({
+          title: "Health Check Failed",
+          description: report.message || "Could not complete the health check.",
+          variant: "destructive",
         });
       }
     } catch (error) {
@@ -51,11 +86,15 @@ const SiteHealthReport = () => {
     }
   };
 
+  const isSuccessReport = (report: HealthReport): report is HealthReportSuccess => {
+    return 'database' in report && 'issues' in report;
+  };
+
   useEffect(() => {
     runHealthCheck();
   }, []);
 
-  const getStatusIcon = (status) => {
+  const getStatusIcon = (status: string) => {
     switch (status) {
       case 'healthy':
         return <CheckCircle className="h-5 w-5 text-green-500" />;
@@ -68,7 +107,7 @@ const SiteHealthReport = () => {
     }
   };
 
-  const getStatusBadge = (status) => {
+  const getStatusBadge = (status: string) => {
     switch (status) {
       case 'healthy':
         return <Badge className="bg-green-500 text-white">Healthy</Badge>;
@@ -89,6 +128,42 @@ const SiteHealthReport = () => {
             <RefreshCw className="h-8 w-8 animate-spin mx-auto mb-4" />
             Running comprehensive health check...
           </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  // Handle error case
+  if (!isSuccessReport(healthReport)) {
+    return (
+      <Card className="bg-gray-800 border-gold/20">
+        <CardHeader>
+          <CardTitle className="text-gold flex items-center">
+            <Settings className="h-5 w-5 mr-2" />
+            Site Health Report - Error
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="bg-red-900/20 border border-red-500/20 p-4 rounded">
+            <p className="text-red-200">{healthReport.message}</p>
+            {healthReport.error && (
+              <p className="text-red-300 text-sm mt-2">Error: {healthReport.error}</p>
+            )}
+          </div>
+          <Button
+            onClick={runHealthCheck}
+            disabled={isLoading}
+            variant="outline"
+            size="sm"
+            className="border-coral text-coral hover:bg-coral hover:text-black mt-4"
+          >
+            {isLoading ? (
+              <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+            ) : (
+              <RefreshCw className="h-4 w-4 mr-2" />
+            )}
+            Retry Check
+          </Button>
         </CardContent>
       </Card>
     );
@@ -129,7 +204,7 @@ const SiteHealthReport = () => {
                   <p className="text-white font-semibold">Database</p>
                   <p className="text-gray-300 text-sm">
                     {healthReport.database?.tables ? 
-                      `${Object.values(healthReport.database.tables).reduce((a, b) => a + b, 0)} total records` : 
+                      `${Object.values(healthReport.database.tables).reduce((a: number, b: number) => a + b, 0)} total records` : 
                       'Connection status'
                     }
                   </p>
