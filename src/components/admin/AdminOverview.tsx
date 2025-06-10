@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import AdminAnalytics from "./AdminAnalytics";
 import TestDataManager from "./TestDataManager";
+import SiteHealthReport from "./SiteHealthReport";
 
 interface AdminOverviewProps {
   stats: {
@@ -26,6 +27,9 @@ interface AdminOverviewProps {
 const AdminOverview = ({ stats }: AdminOverviewProps) => {
   return (
     <div className="space-y-6">
+      {/* Site Health Report */}
+      <SiteHealthReport />
+
       {/* Test Data Manager */}
       <TestDataManager />
 

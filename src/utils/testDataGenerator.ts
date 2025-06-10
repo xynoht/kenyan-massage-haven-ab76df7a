@@ -178,18 +178,96 @@ export const generateTestData = async () => {
 
 export const clearTestData = async () => {
   try {
-    console.log('Clearing test data...');
+    console.log('Clearing all test data...');
 
-    // Clear test data (be careful in production!)
-    await supabase.from('bookings').delete().neq('id', '00000000-0000-0000-0000-000000000000');
-    await supabase.from('contact_messages').delete().neq('id', '00000000-0000-0000-0000-000000000000');
-    await supabase.from('gift_vouchers').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+    // Clear all data from tables (comprehensive cleanup)
+    const tables = ['bookings', 'contact_messages', 'gift_vouchers', 'mpesa_transactions', 'payment_transactions'];
+    
+    for (const table of tables) {
+      const { error } = await supabase
+        .from(table)
+        .delete()
+        .neq('id', '00000000-0000-0000-0000-000000000000'); // This condition ensures we delete all rows
+      
+      if (error) {
+        console.error(`Error clearing ${table}:`, error);
+      } else {
+        console.log(`Successfully cleared ${table} table`);
+      }
+    }
 
-    console.log('Test data cleared successfully');
-    return { success: true, message: 'Test data cleared successfully' };
+    console.log('All test data cleared successfully');
+    return { success: true, message: 'All test data cleared successfully' };
 
   } catch (error) {
     console.error('Error clearing test data:', error);
     return { success: false, message: 'Failed to clear test data', error };
+  }
+};
+
+export const performSiteHealthCheck = async () => {
+  try {
+    console.log('Performing comprehensive site health check...');
+    
+    const healthReport = {
+      database: { status: 'checking', tables: {} },
+      authentication: { status: 'checking' },
+      navigation: { status: 'checking' },
+      adminDashboard: { status: 'checking' },
+      forms: { status: 'checking' },
+      issues: [],
+      recommendations: []
+    };
+
+    // Test database connectivity
+    try {
+      const { data: bookings } = await supabase.from('bookings').select('count', { count: 'exact' });
+      const { data: messages } = await supabase.from('contact_messages').select('count', { count: 'exact' });
+      const { data: vouchers } = await supabase.from('gift_vouchers').select('count', { count: 'exact' });
+      const { data: adminUsers } = await supabase.from('admin_users').select('count', { count: 'exact' });
+      
+      healthReport.database.status = 'healthy';
+      healthReport.database.tables = {
+        bookings: bookings?.[0]?.count || 0,
+        messages: messages?.[0]?.count || 0,
+        vouchers: vouchers?.[0]?.count || 0,
+        adminUsers: adminUsers?.[0]?.count || 0
+      };
+    } catch (error) {
+      healthReport.database.status = 'error';
+      healthReport.issues.push('Database connectivity issues detected');
+    }
+
+    // Test admin authentication
+    try {
+      const { data: testAuth } = await supabase.rpc('authenticate_admin', {
+        email_input: 'test@example.com',
+        password_input: 'wrongpassword'
+      });
+      healthReport.authentication.status = 'healthy';
+    } catch (error) {
+      healthReport.authentication.status = 'error';
+      healthReport.issues.push('Admin authentication system may have issues');
+    }
+
+    // Check for potential issues
+    if (healthReport.database.tables.adminUsers === 0) {
+      healthReport.issues.push('No admin users found - you may need to create an admin account');
+    }
+
+    // Add recommendations
+    healthReport.recommendations.push('Test admin login with valid credentials');
+    healthReport.recommendations.push('Test booking form submission');
+    healthReport.recommendations.push('Test contact form submission');
+    healthReport.recommendations.push('Test gift voucher creation');
+    
+    return healthReport;
+  } catch (error) {
+    console.error('Health check failed:', error);
+    return { 
+      status: 'error', 
+      message: 'Health check failed',
+      error: error.message 
+    };
   }
 };
