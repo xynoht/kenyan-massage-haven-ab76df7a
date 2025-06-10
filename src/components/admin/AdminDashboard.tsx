@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -85,11 +84,6 @@ const AdminDashboard = ({ adminData, onLogout }: AdminDashboardProps) => {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('adminSession');
-    toast({
-      title: "Logged Out",
-      description: "You have been successfully logged out.",
-    });
     onLogout();
   };
 
