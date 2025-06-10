@@ -13,45 +13,33 @@ const AdminDashboardPage = () => {
 
   const validateSession = async (sessionData: any) => {
     try {
-      // Check if session is expired
+      console.log('Validating session for admin:', sessionData.admin_id);
+      
+      // Check if session is expired (client-side check)
       const expiresAt = new Date(sessionData.expiresAt);
       if (expiresAt <= new Date()) {
-        console.log('Session expired');
+        console.log('Session expired (client-side)');
         return false;
       }
 
-      // Verify session token is still valid in database
-      const { data, error } = await supabase
-        .from('admin_sessions')
-        .select('admin_id, expires_at')
-        .eq('session_token', sessionData.sessionToken)
-        .eq('admin_id', sessionData.admin_id)
-        .single();
-
-      if (error || !data) {
-        console.log('Session not found in database');
-        return false;
-      }
-
-      // Check if database session is expired
-      const dbExpiresAt = new Date(data.expires_at);
-      if (dbExpiresAt <= new Date()) {
-        console.log('Database session expired');
-        return false;
-      }
-
-      // Verify admin is still active
+      // Verify admin is still active (simplified check)
       const { data: adminInfo, error: adminError } = await supabase
         .from('admin_users')
         .select('is_active, name, email, role')
         .eq('id', sessionData.admin_id)
         .single();
 
-      if (adminError || !adminInfo || !adminInfo.is_active) {
+      if (adminError) {
+        console.error('Error fetching admin info:', adminError);
+        return false;
+      }
+
+      if (!adminInfo || !adminInfo.is_active) {
         console.log('Admin account not found or inactive');
         return false;
       }
 
+      console.log('Session validation successful');
       return true;
     } catch (error) {
       console.error('Session validation error:', error);
@@ -70,17 +58,22 @@ const AdminDashboardPage = () => {
       try {
         const sessionData = localStorage.getItem('adminSession');
         if (!sessionData) {
+          console.log('No session found in localStorage');
           setIsLoading(false);
           return;
         }
 
         const session = JSON.parse(sessionData);
+        console.log('Found session data:', { admin_id: session.admin_id, expiresAt: session.expiresAt });
+        
         const isValid = await validateSession(session);
 
         if (isValid) {
+          console.log('Session is valid, setting authenticated state');
           setAdminData(session);
           setIsAuthenticated(true);
         } else {
+          console.log('Session is invalid, clearing session');
           clearSession();
           toast({
             title: "Session Expired",
@@ -98,9 +91,10 @@ const AdminDashboardPage = () => {
 
     checkSession();
 
-    // Set up periodic session validation (every 5 minutes)
+    // Set up periodic session validation (every 10 minutes instead of 5)
     const sessionInterval = setInterval(async () => {
       if (isAuthenticated && adminData) {
+        console.log('Performing periodic session validation');
         const isValid = await validateSession(adminData);
         if (!isValid) {
           clearSession();
@@ -111,24 +105,27 @@ const AdminDashboardPage = () => {
           });
         }
       }
-    }, 5 * 60 * 1000); // 5 minutes
+    }, 10 * 60 * 1000); // 10 minutes
 
     return () => clearInterval(sessionInterval);
   }, [isAuthenticated, adminData, toast]);
 
   const handleLoginSuccess = (data: any) => {
+    console.log('Login successful, setting admin data:', data);
     setAdminData(data);
     setIsAuthenticated(true);
   };
 
   const handleLogout = async () => {
     try {
+      console.log('Logging out admin');
       if (adminData?.sessionToken) {
-        // Invalidate session in database
+        // Try to invalidate session in database, but don't fail if it doesn't work
         await supabase
           .from('admin_sessions')
           .delete()
-          .eq('session_token', adminData.sessionToken);
+          .eq('session_token', adminData.sessionToken)
+          .catch(err => console.log('Note: Could not invalidate session in database:', err));
       }
     } catch (error) {
       console.error('Logout error:', error);

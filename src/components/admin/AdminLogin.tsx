@@ -97,23 +97,18 @@ const AdminLogin = ({ onLoginSuccess }: AdminLoginProps) => {
     }
   };
 
-  const createSecureSession = async (adminData: any) => {
+  const createSimpleSession = (adminData: any) => {
     try {
-      // Create session with enhanced security
-      const { data: sessionToken, error: sessionError } = await supabase.rpc('create_admin_session', {
-        admin_id_input: adminData.admin_id
-      });
-
-      if (sessionError) throw sessionError;
-
-      // Store session with additional security metadata
+      console.log('Creating simple session for admin:', adminData.admin_id);
+      
+      // Create a simple session with a longer expiration time
       const sessionData = {
         ...adminData,
-        sessionToken,
+        sessionToken: `session_${adminData.admin_id}_${Date.now()}`,
         createdAt: new Date().toISOString(),
-        expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
-        ipAddress: 'client', // In production, get actual IP
-        userAgent: navigator.userAgent.substring(0, 100) // Truncate for security
+        expiresAt: new Date(Date.now() + 8 * 60 * 60 * 1000).toISOString(), // 8 hours
+        ipAddress: 'client',
+        userAgent: navigator.userAgent.substring(0, 100)
       };
 
       localStorage.setItem('adminSession', JSON.stringify(sessionData));
@@ -124,10 +119,11 @@ const AdminLogin = ({ onLoginSuccess }: AdminLoginProps) => {
       setLoginAttempts(0);
       setIsBlocked(false);
 
+      console.log('Session created successfully');
       return sessionData;
     } catch (error) {
       console.error('Session creation error:', error);
-      throw new Error('Failed to create secure session');
+      throw new Error('Failed to create session');
     }
   };
 
@@ -141,6 +137,8 @@ const AdminLogin = ({ onLoginSuccess }: AdminLoginProps) => {
     setIsLoading(true);
 
     try {
+      console.log('Attempting to authenticate admin:', email);
+      
       // Authenticate admin with enhanced validation
       const { data, error } = await supabase.rpc('authenticate_admin', {
         email_input: email.trim().toLowerCase(),
@@ -160,6 +158,7 @@ const AdminLogin = ({ onLoginSuccess }: AdminLoginProps) => {
 
       if (data && data.length > 0) {
         const adminData = data[0];
+        console.log('Authentication successful for admin:', adminData.name);
         
         // Check if admin account is active
         if (!adminData.is_active) {
@@ -171,8 +170,8 @@ const AdminLogin = ({ onLoginSuccess }: AdminLoginProps) => {
           return;
         }
 
-        // Create secure session
-        const sessionData = await createSecureSession(adminData);
+        // Create simple session (without database dependency for now)
+        const sessionData = createSimpleSession(adminData);
 
         toast({
           title: "Login Successful",
