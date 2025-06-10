@@ -119,7 +119,7 @@ export const generateTestData = async () => {
       console.log('Test messages inserted successfully');
     }
 
-    // Generate test gift vouchers
+    // Generate test gift vouchers with voucher_code property
     const testVouchers = [
       {
         sender_name: "John Doe",
@@ -129,7 +129,8 @@ export const generateTestData = async () => {
         branch: "Nairobi CBD",
         message: "Happy Birthday! Enjoy a relaxing massage.",
         payment_status: "completed",
-        status: "active"
+        status: "active",
+        voucher_code: "PRI-TEST001"
       },
       {
         sender_name: "Sarah Wilson",
@@ -139,7 +140,8 @@ export const generateTestData = async () => {
         branch: "Westlands",
         message: "Congratulations on your promotion! You deserve some pampering.",
         payment_status: "completed",
-        status: "active"
+        status: "active",
+        voucher_code: "PRI-TEST002"
       },
       {
         sender_name: "Mike Johnson",
@@ -149,7 +151,8 @@ export const generateTestData = async () => {
         branch: "Karen",
         message: "Get well soon! This will help you relax and recover.",
         payment_status: "pending",
-        status: "active"
+        status: "active",
+        voucher_code: "PRI-TEST003"
       }
     ];
 
