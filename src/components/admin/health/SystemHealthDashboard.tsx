@@ -130,6 +130,7 @@ const SystemHealthDashboard = () => {
         <>
           {/* Overall Status */}
           <HealthStatusCard
+            title="Overall System Status"
             status={report.overall}
             message={`System is ${report.overall}`}
             details={`${report.checks.length} components checked`}
