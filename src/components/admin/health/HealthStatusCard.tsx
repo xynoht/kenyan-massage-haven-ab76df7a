@@ -4,9 +4,9 @@ import { Badge } from "@/components/ui/badge";
 import { CheckCircle, XCircle, AlertTriangle, RefreshCw } from "lucide-react";
 
 interface HealthStatusCardProps {
-  title?: string;
+  title: string;
   description?: string;
-  status: string;
+  status: 'healthy' | 'warning' | 'error' | 'checking';
   message?: string;
   details?: string;
   icon?: React.ReactNode;
@@ -39,9 +39,9 @@ const HealthStatusCard = ({ title, description, status, message, details, icon }
     }
   };
 
-  // Use title/description if provided, otherwise fall back to message/details
-  const displayTitle = title || message;
-  const displayDescription = description || details;
+  // Use title as primary display, with message/description as fallback
+  const displayTitle = title || message || 'Unknown Status';
+  const displayDescription = description || details || '';
 
   return (
     <div className="flex items-center justify-between p-4 bg-gray-700 rounded-lg">
@@ -49,7 +49,9 @@ const HealthStatusCard = ({ title, description, status, message, details, icon }
         {icon || getStatusIcon(status)}
         <div>
           <p className="text-white font-semibold">{displayTitle}</p>
-          <p className="text-gray-300 text-sm">{displayDescription}</p>
+          {displayDescription && (
+            <p className="text-gray-300 text-sm">{displayDescription}</p>
+          )}
         </div>
       </div>
       {getStatusBadge(status)}

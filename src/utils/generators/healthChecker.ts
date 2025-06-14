@@ -1,103 +1,157 @@
 
 import { supabase } from "@/integrations/supabase/client";
 
-export const performSiteHealthCheck = async () => {
-  console.log('Starting comprehensive site health check...');
-  
-  try {
-    const issues: string[] = [];
-    const recommendations: string[] = [];
-    
-    // Check database connectivity and tables
-    console.log('Checking database connectivity...');
-    const tableChecks = await Promise.allSettled([
-      supabase.from('bookings').select('*', { count: 'exact', head: true }),
-      supabase.from('contact_messages').select('*', { count: 'exact', head: true }),
-      supabase.from('gift_vouchers').select('*', { count: 'exact', head: true }),
-      supabase.from('admin_users').select('*', { count: 'exact', head: true }),
-      supabase.from('payment_transactions').select('*', { count: 'exact', head: true })
-    ]);
+export interface SiteHealthCheck {
+  id: string;
+  name: string;
+  status: 'healthy' | 'warning' | 'error';
+  message: string;
+  details?: any;
+  lastChecked: string;
+}
 
-    const tableNames = ['bookings', 'contact_messages', 'gift_vouchers', 'admin_users', 'payment_transactions'];
-    const tableCounts: Record<string, number> = {};
-    
-    tableChecks.forEach((result, index) => {
-      const tableName = tableNames[index];
-      if (result.status === 'fulfilled' && !result.value.error) {
-        tableCounts[tableName] = result.value.count || 0;
-      } else {
-        tableCounts[tableName] = 0;
-        issues.push(`Table ${tableName} is not accessible or has errors`);
-      }
+export interface SiteHealthReport {
+  overall: 'healthy' | 'warning' | 'error';
+  checks: SiteHealthCheck[];
+  timestamp: string;
+  recommendations: string[];
+  summary: string;
+}
+
+export const performSiteHealthCheck = async (): Promise<SiteHealthReport> => {
+  const checks: SiteHealthCheck[] = [];
+  const recommendations: string[] = [];
+  const timestamp = new Date().toISOString();
+
+  try {
+    // Database connectivity check
+    const { error: dbError } = await supabase.from('bookings').select('id').limit(1);
+    checks.push({
+      id: 'db-connectivity',
+      name: 'Database Connectivity',
+      status: dbError ? 'error' : 'healthy',
+      message: dbError ? 'Database connection failed' : 'Database connection successful',
+      details: dbError?.message,
+      lastChecked: timestamp
     });
 
-    // Check for data integrity issues
-    if (tableCounts.bookings === 0) {
-      issues.push('No booking data found - customers may not be able to see their appointments');
-      recommendations.push('Add sample booking data for testing or check if the booking form is working');
+    if (dbError) {
+      recommendations.push('Check database connection and credentials');
     }
 
-    if (tableCounts.admin_users === 0) {
-      issues.push('No admin users found - admin dashboard may not be accessible');
-      recommendations.push('Create at least one admin user account');
+    // Table structure checks
+    const tables = ['bookings', 'contact_messages', 'gift_vouchers', 'admin_users'];
+    for (const table of tables) {
+      try {
+        const { error } = await supabase.from(table as any).select('*').limit(1);
+        checks.push({
+          id: `table-${table}`,
+          name: `${table} Table`,
+          status: error ? 'warning' : 'healthy',
+          message: error ? `Issues with ${table} table` : `${table} table accessible`,
+          details: error?.message,
+          lastChecked: timestamp
+        });
+
+        if (error) {
+          recommendations.push(`Review ${table} table structure and permissions`);
+        }
+      } catch (e) {
+        checks.push({
+          id: `table-${table}`,
+          name: `${table} Table`,
+          status: 'error',
+          message: `Failed to check ${table} table`,
+          details: e,
+          lastChecked: timestamp
+        });
+      }
     }
 
-    if (tableCounts.contact_messages === 0) {
-      recommendations.push('No contact messages found - consider testing the contact form');
-    }
+    // Check recent activity
+    const { data: recentBookings } = await supabase
+      .from('bookings')
+      .select('id')
+      .gte('created_at', new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString());
 
-    // Check authentication system
-    let authStatus = 'healthy';
-    try {
-      const { data: session } = await supabase.auth.getSession();
-      console.log('Auth system check:', session ? 'Active session found' : 'No active session');
-    } catch (error) {
-      authStatus = 'error';
-      issues.push('Authentication system appears to be malfunctioning');
-    }
-
-    // Performance checks
-    if (tableCounts.bookings > 1000) {
-      recommendations.push('Large number of bookings detected - consider implementing pagination');
-    }
-
-    if (tableCounts.contact_messages > 500) {
-      recommendations.push('Large number of messages detected - consider archiving old messages');
-    }
-
-    // Navigation and forms check
-    const navigationStatus = 'healthy'; // Assume healthy since we're in the app
-    const formsStatus = issues.length > 0 ? 'warning' : 'healthy';
-
-    console.log('Health check completed successfully');
-    
-    return {
-      database: {
-        status: issues.length === 0 ? 'healthy' : 'warning',
-        tables: tableCounts
-      },
-      authentication: {
-        status: authStatus
-      },
-      navigation: {
-        status: navigationStatus
-      },
-      adminDashboard: {
-        status: 'healthy'
-      },
-      forms: {
-        status: formsStatus
-      },
-      issues,
-      recommendations
-    };
+    checks.push({
+      id: 'recent-activity',
+      name: 'Recent Activity',
+      status: 'healthy',
+      message: `${recentBookings?.length || 0} bookings in last 7 days`,
+      details: { bookingCount: recentBookings?.length || 0 },
+      lastChecked: timestamp
+    });
 
   } catch (error) {
-    console.error('Health check failed:', error);
-    return {
+    checks.push({
+      id: 'general-error',
+      name: 'General System Check',
       status: 'error',
-      message: 'Health check failed to complete',
-      error: error instanceof Error ? error.message : 'Unknown error'
-    };
+      message: 'System health check failed',
+      details: error,
+      lastChecked: timestamp
+    });
+    recommendations.push('System requires immediate attention');
   }
+
+  // Determine overall status
+  const errorCount = checks.filter(c => c.status === 'error').length;
+  const warningCount = checks.filter(c => c.status === 'warning').length;
+  
+  let overall: 'healthy' | 'warning' | 'error' = 'healthy';
+  if (errorCount > 0) {
+    overall = 'error';
+  } else if (warningCount > 0) {
+    overall = 'warning';
+  }
+
+  // Generate summary
+  let summary = `System Status: ${overall.toUpperCase()}. `;
+  summary += `${checks.length} checks completed. `;
+  if (errorCount > 0) {
+    summary += `${errorCount} critical issues found. `;
+  }
+  if (warningCount > 0) {
+    summary += `${warningCount} warnings detected. `;
+  }
+  if (overall === 'healthy') {
+    summary += 'All systems operational.';
+  }
+
+  // Add general recommendations
+  if (overall === 'healthy') {
+    recommendations.push('System is running optimally');
+  } else if (overall === 'warning') {
+    recommendations.push('Monitor warnings to prevent issues');
+  } else {
+    recommendations.push('Address critical issues immediately');
+  }
+
+  return {
+    overall,
+    checks,
+    timestamp,
+    recommendations,
+    summary
+  };
+};
+
+export const generateHealthSummary = (report: SiteHealthReport): string => {
+  const { overall, checks, recommendations } = report;
+  
+  let summary = `System Health: ${overall.toUpperCase()}\n\n`;
+  
+  summary += "Component Status:\n";
+  checks.forEach(check => {
+    const icon = check.status === 'healthy' ? '✅' : check.status === 'warning' ? '⚠️' : '❌';
+    summary += `${icon} ${check.name}: ${check.message}\n`;
+  });
+  
+  summary += "\nRecommendations:\n";
+  recommendations.forEach((rec, index) => {
+    summary += `${index + 1}. ${rec}\n`;
+  });
+  
+  return summary;
 };
