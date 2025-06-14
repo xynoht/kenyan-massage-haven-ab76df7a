@@ -96,7 +96,7 @@ export const generateAllTestData = async () => {
       }
     ];
 
-    // Generate sample gift vouchers
+    // Generate sample gift vouchers with voucher_code field
     const sampleVouchers = [
       {
         sender_name: 'Lisa Anderson',
@@ -106,7 +106,8 @@ export const generateAllTestData = async () => {
         branch: 'Westlands',
         message: 'Happy Birthday! Enjoy a relaxing massage.',
         payment_status: 'completed',
-        status: 'active'
+        status: 'active',
+        voucher_code: 'PRI-TEST001'
       },
       {
         sender_name: 'Tom Wilson',
@@ -116,7 +117,8 @@ export const generateAllTestData = async () => {
         branch: 'Karen',
         message: 'Anniversary gift for my lovely wife.',
         payment_status: 'completed',
-        status: 'active'
+        status: 'active',
+        voucher_code: 'PRI-TEST002'
       },
       {
         sender_name: 'Peter Jones',
@@ -126,7 +128,8 @@ export const generateAllTestData = async () => {
         branch: 'Westlands',
         message: 'Get well soon! This should help you relax.',
         payment_status: 'pending',
-        status: 'active'
+        status: 'active',
+        voucher_code: 'PRI-TEST003'
       }
     ];
 
