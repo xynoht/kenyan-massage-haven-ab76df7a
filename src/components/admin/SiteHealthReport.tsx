@@ -2,20 +2,18 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { 
-  CheckCircle, 
-  XCircle, 
-  AlertTriangle, 
   Database,
   Shield,
-  Navigation,
-  FileText,
   Settings,
   RefreshCw
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { performSiteHealthCheck } from "@/utils/testDataGenerator";
+import HealthStatusCard from "./health/HealthStatusCard";
+import DatabaseStats from "./health/DatabaseStats";
+import IssuesList from "./health/IssuesList";
+import RecommendationsList from "./health/RecommendationsList";
 
 interface HealthReportSuccess {
   database: {
@@ -94,32 +92,6 @@ const SiteHealthReport = () => {
     runHealthCheck();
   }, []);
 
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case 'healthy':
-        return <CheckCircle className="h-5 w-5 text-green-500" />;
-      case 'error':
-        return <XCircle className="h-5 w-5 text-red-500" />;
-      case 'warning':
-        return <AlertTriangle className="h-5 w-5 text-yellow-500" />;
-      default:
-        return <RefreshCw className="h-5 w-5 text-gray-400 animate-spin" />;
-    }
-  };
-
-  const getStatusBadge = (status: string) => {
-    switch (status) {
-      case 'healthy':
-        return <Badge className="bg-green-500 text-white">Healthy</Badge>;
-      case 'error':
-        return <Badge className="bg-red-500 text-white">Error</Badge>;
-      case 'warning':
-        return <Badge className="bg-yellow-500 text-white">Warning</Badge>;
-      default:
-        return <Badge className="bg-gray-500 text-white">Checking</Badge>;
-    }
-  };
-
   if (!healthReport) {
     return (
       <Card className="bg-gray-800 border-gold/20">
@@ -196,84 +168,34 @@ const SiteHealthReport = () => {
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-            {/* Database Status */}
-            <div className="flex items-center justify-between p-4 bg-gray-700 rounded-lg">
-              <div className="flex items-center space-x-3">
-                <Database className="h-6 w-6 text-blue-400" />
-                <div>
-                  <p className="text-white font-semibold">Database</p>
-                  <p className="text-gray-300 text-sm">
-                    {healthReport.database?.tables ? 
-                      `${Object.values(healthReport.database.tables).reduce((a: number, b: number) => a + b, 0)} total records` : 
-                      'Connection status'
-                    }
-                  </p>
-                </div>
-              </div>
-              {getStatusBadge(healthReport.database?.status)}
-            </div>
+            <HealthStatusCard
+              title="Database"
+              description={healthReport.database?.tables ? 
+                `${Object.values(healthReport.database.tables).reduce((a: number, b: number) => a + b, 0)} total records` : 
+                'Connection status'
+              }
+              status={healthReport.database?.status}
+              icon={<Database className="h-6 w-6 text-blue-400" />}
+            />
 
-            {/* Authentication Status */}
-            <div className="flex items-center justify-between p-4 bg-gray-700 rounded-lg">
-              <div className="flex items-center space-x-3">
-                <Shield className="h-6 w-6 text-green-400" />
-                <div>
-                  <p className="text-white font-semibold">Authentication</p>
-                  <p className="text-gray-300 text-sm">Admin login system</p>
-                </div>
-              </div>
-              {getStatusBadge(healthReport.authentication?.status)}
-            </div>
+            <HealthStatusCard
+              title="Authentication"
+              description="Admin login system"
+              status={healthReport.authentication?.status}
+              icon={<Shield className="h-6 w-6 text-green-400" />}
+            />
           </div>
 
           {/* Database Tables Breakdown */}
           {healthReport.database?.tables && (
-            <div className="mb-6">
-              <h3 className="text-lg font-semibold text-coral mb-3">Database Tables</h3>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                {Object.entries(healthReport.database.tables).map(([table, count]) => (
-                  <div key={table} className="bg-gray-700 p-3 rounded text-center">
-                    <p className="text-gray-300 text-sm capitalize">{table.replace(/([A-Z])/g, ' $1')}</p>
-                    <p className="text-white font-bold text-lg">{count}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
+            <DatabaseStats tables={healthReport.database.tables} />
           )}
 
           {/* Issues */}
-          {healthReport.issues && healthReport.issues.length > 0 && (
-            <div className="mb-6">
-              <h3 className="text-lg font-semibold text-red-400 mb-3 flex items-center">
-                <AlertTriangle className="h-5 w-5 mr-2" />
-                Issues Found ({healthReport.issues.length})
-              </h3>
-              <div className="space-y-2">
-                {healthReport.issues.map((issue, index) => (
-                  <div key={index} className="bg-red-900/20 border border-red-500/20 p-3 rounded">
-                    <p className="text-red-200">{issue}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
+          <IssuesList issues={healthReport.issues} />
 
           {/* Recommendations */}
-          {healthReport.recommendations && healthReport.recommendations.length > 0 && (
-            <div>
-              <h3 className="text-lg font-semibold text-blue-400 mb-3 flex items-center">
-                <FileText className="h-5 w-5 mr-2" />
-                Recommendations
-              </h3>
-              <div className="space-y-2">
-                {healthReport.recommendations.map((rec, index) => (
-                  <div key={index} className="bg-blue-900/20 border border-blue-500/20 p-3 rounded">
-                    <p className="text-blue-200">{rec}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
+          <RecommendationsList recommendations={healthReport.recommendations} />
         </CardContent>
       </Card>
     </div>
