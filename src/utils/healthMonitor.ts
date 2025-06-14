@@ -47,13 +47,13 @@ export const runHealthChecks = async (): Promise<HealthReport> => {
 
   // Check RLS policies
   try {
-    const tables = ['bookings', 'contact_messages', 'gift_vouchers', 'mpesa_transactions', 'payment_transactions'];
+    const mainTables = ['bookings', 'contact_messages', 'gift_vouchers', 'mpesa_transactions', 'payment_transactions'];
     let rlsIssues = 0;
     
-    for (const table of tables) {
+    for (const table of mainTables) {
       try {
         // Try to access the table - RLS will block if not properly configured
-        const { error } = await supabase.from(table).select('id').limit(1);
+        const { error } = await supabase.from(table as any).select('id').limit(1);
         if (error && error.message.includes('row-level security')) {
           rlsIssues++;
         }
