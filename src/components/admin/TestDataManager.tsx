@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Database, Trash2, RefreshCw } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { generateTestData, clearTestData } from "@/utils/testDataGenerator";
+import { generateAllTestData, clearAllTestData } from "@/utils/testDataGenerator";
 
 const TestDataManager = () => {
   const [isGenerating, setIsGenerating] = useState(false);
@@ -14,7 +14,7 @@ const TestDataManager = () => {
   const handleGenerateData = async () => {
     setIsGenerating(true);
     try {
-      const result = await generateTestData();
+      const result = await generateAllTestData();
       if (result.success) {
         toast({
           title: "Success",
@@ -23,7 +23,7 @@ const TestDataManager = () => {
       } else {
         toast({
           title: "Error",
-          description: result.message,
+          description: "Failed to generate test data",
           variant: "destructive",
         });
       }
@@ -41,7 +41,7 @@ const TestDataManager = () => {
   const handleClearData = async () => {
     setIsClearing(true);
     try {
-      const result = await clearTestData();
+      const result = await clearAllTestData();
       if (result.success) {
         toast({
           title: "Success",
@@ -50,7 +50,7 @@ const TestDataManager = () => {
       } else {
         toast({
           title: "Error",
-          description: result.message,
+          description: "Failed to clear test data",
           variant: "destructive",
         });
       }
