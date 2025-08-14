@@ -8,7 +8,7 @@ const Terms = () => {
       <section className="py-12 bg-gradient-to-b from-gray-900 to-black">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h1 className="text-4xl font-bold text-gold mb-4">Terms of Service</h1>
-          <p className="text-xl text-gray-300">Last Updated: June 5, 2024</p>
+          <p className="text-xl text-gray-300">Last Updated: January 14, 2025</p>
         </div>
       </section>
 

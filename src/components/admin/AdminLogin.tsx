@@ -202,7 +202,7 @@ const AdminLogin = ({ onLoginSuccess }: AdminLoginProps) => {
           <div className="mt-6 text-center text-sm text-gray-400">
             <p>Default credentials for testing:</p>
             <p>Email: tochiuimaria@gmail.com</p>
-            <p>Password: priella2024</p>
+            <p>Password: priella2025</p>
           </div>
         </CardContent>
       </Card>

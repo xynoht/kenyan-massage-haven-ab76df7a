@@ -8,42 +8,42 @@ const Testimonials = () => {
       name: "Sarah Johnson",
       quote: "The AI massage chairs at Priella are incredible! I feel completely relaxed and rejuvenated after every session. The personalized experience is truly something special, and the environment is so peaceful.",
       rating: 5,
-      date: "May 28, 2024",
+      date: "January 10, 2025",
       source: "Google Reviews"
     },
     {
       name: "Michael Chen",
       quote: "Premium experience at an affordable price. The technology is amazing and the location is perfect. I've been to many massage places in Nairobi, and Priella stands out for its innovation and quality.",
       rating: 5,
-      date: "May 24, 2024",
+      date: "January 8, 2025",
       source: "Direct Feedback"
     },
     {
       name: "Grace Wanjiku",
       quote: "I visit Priella weekly now. It's become my go-to place for stress relief and self-care. The staff is friendly, the chairs are amazing, and I always leave feeling like a new person!",
       rating: 5,
-      date: "May 20, 2024",
+      date: "January 5, 2025",
       source: "Instagram"
     },
     {
       name: "David Ochieng",
       quote: "As someone who suffers from chronic back pain, finding Priella has been a blessing. The AI massage chairs target my problem areas perfectly, and I've noticed significant improvement after just a few sessions.",
       rating: 5,
-      date: "May 15, 2024",
+      date: "January 3, 2025",
       source: "Google Reviews"
     },
     {
       name: "Priya Shah",
       quote: "The convenience of booking online and the premium location at The Hub make Priella perfect for fitting self-care into my busy schedule. Highly recommended for professionals who need quick stress relief!",
       rating: 5,
-      date: "May 10, 2024",
+      date: "January 1, 2025",
       source: "WhatsApp"
     },
     {
       name: "James Mwangi",
       quote: "I was skeptical about AI massage chairs, but Priella completely changed my mind. The experience is just as good as a manual massage, and the consistency is even better. Now I'm hooked!",
       rating: 4,
-      date: "May 8, 2024",
+      date: "December 28, 2024",
       source: "Facebook"
     }
   ];
