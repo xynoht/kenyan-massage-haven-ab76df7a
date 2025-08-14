@@ -37,6 +37,7 @@ const App = () => (
           <Routes>
             {/* Admin Dashboard - no navbar/footer */}
             <Route path="/admin" element={<AdminDashboard />} />
+            <Route path="/management" element={<Management />} />
             
             {/* Public routes with navbar/footer */}
             <Route path="/*" element={
@@ -59,7 +60,6 @@ const App = () => (
                     <Route path="/terms" element={<Terms />} />
                     <Route path="/privacy" element={<Privacy />} />
                     <Route path="/refund" element={<Refund />} />
-                    <Route path="/management" element={<Management />} />
                     <Route path="*" element={<NotFound />} />
                   </Routes>
                 </main>

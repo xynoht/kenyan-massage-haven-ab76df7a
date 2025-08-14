@@ -1,9 +1,28 @@
 
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Mail, Phone, MapPin, User, MessageCircle } from "lucide-react";
+import { Mail, Phone, MapPin, User, MessageCircle, Lock } from "lucide-react";
+import AdminLogin from "@/components/admin/AdminLogin";
 
 const Management = () => {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [adminData, setAdminData] = useState(null);
+
+  useEffect(() => {
+    // Check if admin is already logged in
+    const sessionData = localStorage.getItem('adminSession');
+    if (sessionData) {
+      try {
+        const session = JSON.parse(sessionData);
+        setAdminData(session);
+        setIsAuthenticated(true);
+      } catch (error) {
+        localStorage.removeItem('adminSession');
+      }
+    }
+  }, []);
+
   const handleEmailClick = (email: string) => {
     window.open(`mailto:${email}`, '_blank');
   };
@@ -17,6 +36,29 @@ const Management = () => {
     const cleanNumber = phoneNumber.replace(/[^\d+]/g, '');
     window.open(`https://wa.me/${cleanNumber}`, '_blank');
   };
+
+  const handleLoginSuccess = (data: any) => {
+    setAdminData(data);
+    setIsAuthenticated(true);
+  };
+
+  // Show admin login if not authenticated
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <div className="max-w-md w-full mx-4">
+          <div className="text-center mb-8">
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-coral rounded-full mb-4">
+              <Lock className="h-8 w-8 text-black" />
+            </div>
+            <h1 className="text-2xl font-bold text-gold mb-2">Management Access</h1>
+            <p className="text-gray-300">This area is restricted to authorized personnel only.</p>
+          </div>
+          <AdminLogin onLoginSuccess={handleLoginSuccess} />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="pt-16 min-h-screen bg-black">
