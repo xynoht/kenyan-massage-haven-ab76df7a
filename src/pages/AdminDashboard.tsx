@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import AdminLogin from "@/components/admin/AdminLogin";
 import AdminDashboard from "@/components/admin/AdminDashboard";
-import InitialAdminSetup from "@/components/admin/InitialAdminSetup";
+// InitialAdminSetup removed - only login allowed
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -10,39 +10,13 @@ const AdminDashboardPage = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [adminData, setAdminData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [needsInitialSetup, setNeedsInitialSetup] = useState(false);
+  // Admin setup removed - only login allowed
   const { toast } = useToast();
 
   useEffect(() => {
-    checkInitialSetup();
+    checkSession();
+    setIsLoading(false);
   }, []);
-
-  const checkInitialSetup = async () => {
-    try {
-      // Check if any admin users exist
-      const { data: adminUsers, error } = await supabase
-        .from('admin_users')
-        .select('id')
-        .limit(1);
-
-      if (error) {
-        console.error('Error checking admin users:', error);
-        // If there's an error accessing the table, assume setup is needed
-        setNeedsInitialSetup(true);
-      } else if (!adminUsers || adminUsers.length === 0) {
-        console.log('No admin users found, initial setup required');
-        setNeedsInitialSetup(true);
-      } else {
-        console.log('Admin users exist, checking session');
-        checkSession();
-      }
-    } catch (error) {
-      console.error('Error during initial setup check:', error);
-      setNeedsInitialSetup(true);
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   const checkSession = () => {
     try {
@@ -61,14 +35,7 @@ const AdminDashboardPage = () => {
     }
   };
 
-  const handleSetupComplete = () => {
-    console.log('Initial setup completed');
-    setNeedsInitialSetup(false);
-    toast({
-      title: "Setup Complete",
-      description: "You can now log in with your admin credentials.",
-    });
-  };
+  // Setup functionality removed
 
   const handleLoginSuccess = (data: any) => {
     console.log('Login successful, setting admin data:', data);
@@ -98,9 +65,7 @@ const AdminDashboardPage = () => {
     );
   }
 
-  if (needsInitialSetup) {
-    return <InitialAdminSetup onSetupComplete={handleSetupComplete} />;
-  }
+  // Admin setup removed - only login allowed
 
   if (!isAuthenticated) {
     return <AdminLogin onLoginSuccess={handleLoginSuccess} />;
