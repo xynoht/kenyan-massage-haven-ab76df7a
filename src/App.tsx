@@ -24,6 +24,8 @@ import Refund from "./pages/Refund";
 import Management from "./pages/Management";
 import NotFound from "./pages/NotFound";
 import AdminDashboard from "./pages/AdminDashboard";
+import BlogPost from "./pages/BlogPost";
+import VoucherRedemption from "./pages/VoucherRedemption";
 
 const queryClient = new QueryClient();
 
@@ -57,6 +59,8 @@ const App = () => (
                     <Route path="/payment-confirmation" element={<PaymentConfirmation />} />
                     <Route path="/branches" element={<Branches />} />
                     <Route path="/blog" element={<Blog />} />
+                    <Route path="/blog/:id" element={<BlogPost />} />
+                    <Route path="/redeem-voucher" element={<VoucherRedemption />} />
                     <Route path="/terms" element={<Terms />} />
                     <Route path="/privacy" element={<Privacy />} />
                     <Route path="/refund" element={<Refund />} />

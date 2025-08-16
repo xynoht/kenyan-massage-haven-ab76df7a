@@ -1,5 +1,6 @@
 
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -143,9 +144,11 @@ const Blog = () => {
                       <User className="h-4 w-4 mr-2 text-coral" />
                       <span className="text-sm text-gray-400">{post.author}</span>
                     </div>
-                    <Button variant="ghost" className="text-coral hover:text-coral hover:bg-gray-700 p-0 h-8">
-                      Read More <ArrowRight className="h-4 w-4 ml-2" />
-                    </Button>
+                    <Link to={`/blog/${post.id}`}>
+                      <Button variant="ghost" className="text-coral hover:text-coral hover:bg-gray-700 p-0 h-8">
+                        Read More <ArrowRight className="h-4 w-4 ml-2" />
+                      </Button>
+                    </Link>
                   </div>
                 </CardContent>
               </Card>
@@ -189,12 +192,16 @@ const Blog = () => {
             AI massage session today at Priella.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" className="bg-black hover:bg-gray-800 text-white px-8 py-4 text-lg">
-              Book Your Session
-            </Button>
-            <Button size="lg" variant="outline" className="border-black text-black hover:bg-black hover:text-white px-8 py-4 text-lg">
-              Browse Our Services
-            </Button>
+            <Link to="/book">
+              <Button size="lg" className="bg-black hover:bg-gray-800 text-white px-8 py-4 text-lg">
+                Book Your Session
+              </Button>
+            </Link>
+            <Link to="/services">
+              <Button size="lg" variant="outline" className="border-black text-black hover:bg-black hover:text-white px-8 py-4 text-lg">
+                Browse Our Services
+              </Button>
+            </Link>
           </div>
         </div>
       </section>

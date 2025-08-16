@@ -14,7 +14,7 @@ const Navbar = () => {
     { name: "Services", href: "/services" },
     { name: "Branches", href: "/branches" },
     { name: "Gallery", href: "/gallery" },
-    { name: "Management", href: "/management" },
+    { name: "Redeem Voucher", href: "/redeem-voucher" },
     { name: "Testimonials", href: "/testimonials" },
     { name: "Blog", href: "/blog" },
     { name: "Contact", href: "/contact" },

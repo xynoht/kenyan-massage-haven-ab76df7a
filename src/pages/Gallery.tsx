@@ -1,5 +1,6 @@
 
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { X, ChevronLeft, ChevronRight } from "lucide-react";
@@ -253,12 +254,16 @@ const Gallery = () => {
             discover premium wellness in the heart of Nairobi.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" className="bg-black hover:bg-gray-800 text-white px-8 py-4 text-lg">
-              Book Your Session
-            </Button>
-            <Button size="lg" variant="outline" className="border-black text-black hover:bg-black hover:text-white px-8 py-4 text-lg">
-              Visit Our Location
-            </Button>
+            <Link to="/book">
+              <Button size="lg" className="bg-black hover:bg-gray-800 text-white px-8 py-4 text-lg">
+                Book Your Session
+              </Button>
+            </Link>
+            <Link to="/contact">
+              <Button size="lg" variant="outline" className="border-black text-black hover:bg-black hover:text-white px-8 py-4 text-lg">
+                Visit Our Location
+              </Button>
+            </Link>
           </div>
         </div>
       </section>

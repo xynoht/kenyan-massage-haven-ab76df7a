@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -261,12 +262,16 @@ const Contact = () => {
             Book your session today or contact us for more information.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" className="bg-black hover:bg-gray-800 text-white px-8 py-4 text-lg">
-              Book Your Session
-            </Button>
-            <Button size="lg" variant="outline" className="border-black text-black hover:bg-black hover:text-white px-8 py-4 text-lg">
-              Call Us Now
-            </Button>
+            <Link to="/book">
+              <Button size="lg" className="bg-black hover:bg-gray-800 text-white px-8 py-4 text-lg">
+                Book Your Session
+              </Button>
+            </Link>
+            <a href="tel:+254710904327">
+              <Button size="lg" variant="outline" className="border-black text-black hover:bg-black hover:text-white px-8 py-4 text-lg">
+                Call Us Now
+              </Button>
+            </a>
           </div>
         </div>
       </section>
