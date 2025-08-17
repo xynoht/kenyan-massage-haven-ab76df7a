@@ -83,93 +83,103 @@ const Contact = () => {
       {/* Contact Information & Form */}
       <section className="py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-            {/* Contact Information */}
-            <div>
-              <h2 className="text-3xl font-bold text-gold mb-8">Get In Touch</h2>
-              
-              <div className="space-y-6 mb-8">
-                <div className="flex items-start">
-                  <MapPin className="h-6 w-6 text-coral mr-4 mt-1" />
-                  <div>
-                    <h3 className="text-xl font-semibold text-white mb-2">Our Location</h3>
-                    <p className="text-gray-300">
-                      The Hub Mall Karen<br />
-                      Upper Ground Floor<br />
-                      Behind Nairobi Sports House<br />
-                      Next to Jump<br />
-                      Nairobi, Kenya
-                    </p>
-                  </div>
-                </div>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+              {/* Contact Information */}
+              <div>
+                <h2 className="text-3xl font-bold text-gold mb-8">Get In Touch</h2>
                 
-                <div className="flex items-start">
-                  <Phone className="h-6 w-6 text-coral mr-4 mt-1" />
-                  <div>
-                    <h3 className="text-xl font-semibold text-white mb-2">Phone</h3>
-                    <p className="text-gray-300">+254 710 904 327</p>
+                <div className="space-y-6 mb-8">
+                  <div className="flex items-start">
+                    <MapPin className="h-6 w-6 text-coral mr-4 mt-1 flex-shrink-0" />
+                    <div>
+                      <h3 className="text-xl font-semibold text-white mb-2">Our Location</h3>
+                      <p className="text-gray-300">
+                        The Hub Mall Karen<br />
+                        Upper Ground Floor<br />
+                        Behind Nairobi Sports House<br />
+                        Next to Jump<br />
+                        Nairobi, Kenya
+                      </p>
+                    </div>
                   </div>
-                </div>
-                
-                <div className="flex items-start">
-                  <Mail className="h-6 w-6 text-coral mr-4 mt-1" />
-                  <div>
-                    <h3 className="text-xl font-semibold text-white mb-2">Email</h3>
-                    <p className="text-gray-300">tochiuimaria@gmail.com</p>
+                  
+                  <div className="flex items-start">
+                    <Phone className="h-6 w-6 text-coral mr-4 mt-1 flex-shrink-0" />
+                    <div>
+                      <h3 className="text-xl font-semibold text-white mb-2">Phone</h3>
+                      <a 
+                        href="tel:+254710904327" 
+                        className="text-gray-300 hover:text-coral transition-colors"
+                      >
+                        +254 710 904 327
+                      </a>
+                    </div>
                   </div>
-                </div>
-                
-                <div className="flex items-start">
-                  <Clock className="h-6 w-6 text-coral mr-4 mt-1" />
-                  <div>
-                    <h3 className="text-xl font-semibold text-white mb-2">Operating Hours</h3>
-                    <div className="text-gray-300">
-                      <p>Every day: 10:00 AM - 7:30 PM</p>
-                      <p className="text-sm text-coral">(Including holidays)</p>
+                  
+                  <div className="flex items-start">
+                    <Mail className="h-6 w-6 text-coral mr-4 mt-1 flex-shrink-0" />
+                    <div>
+                      <h3 className="text-xl font-semibold text-white mb-2">Email</h3>
+                      <a 
+                        href="mailto:tochiuimaria@gmail.com" 
+                        className="text-gray-300 hover:text-coral transition-colors"
+                      >
+                        tochiuimaria@gmail.com
+                      </a>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-start">
+                    <Clock className="h-6 w-6 text-coral mr-4 mt-1 flex-shrink-0" />
+                    <div>
+                      <h3 className="text-xl font-semibold text-white mb-2">Operating Hours</h3>
+                      <div className="text-gray-300">
+                        <p>Every day: 10:00 AM - 7:30 PM</p>
+                        <p className="text-sm text-coral">(Including holidays)</p>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
 
-              {/* Social Media Links */}
-              <div>
-                <h3 className="text-xl font-semibold text-gold mb-4">Follow Us</h3>
-                <div className="flex space-x-4">
-                  <a 
-                    href="https://www.instagram.com/priellatherapy" 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="text-coral hover:text-gold transition-colors"
-                  >
-                    Instagram
-                  </a>
-                  <a 
-                    href="https://www.facebook.com/profile.php?id=61576776757354" 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="text-coral hover:text-gold transition-colors"
-                  >
-                    Facebook
-                  </a>
-                  <a 
-                    href="https://www.tiktok.com/@priella_therapy?_t=ZM-8wv8xuDH1ra&_r=1" 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="text-coral hover:text-gold transition-colors"
-                  >
-                    TikTok
-                  </a>
-                  <a 
-                    href="https://wa.me/254710904327" 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="text-coral hover:text-gold transition-colors"
-                  >
-                    WhatsApp
-                  </a>
+                {/* Social Media Links */}
+                <div>
+                  <h3 className="text-xl font-semibold text-gold mb-4">Follow Us</h3>
+                  <div className="flex flex-wrap gap-4">
+                    <a 
+                      href="https://www.instagram.com/priellatherapy" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-coral hover:text-gold transition-colors px-3 py-2 border border-coral/30 rounded-lg hover:border-gold/50"
+                    >
+                      Instagram
+                    </a>
+                    <a 
+                      href="https://www.facebook.com/profile.php?id=61576776757354" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-coral hover:text-gold transition-colors px-3 py-2 border border-coral/30 rounded-lg hover:border-gold/50"
+                    >
+                      Facebook
+                    </a>
+                    <a 
+                      href="https://www.tiktok.com/@priella_therapy?_t=ZM-8wv8xuDH1ra&_r=1" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-coral hover:text-gold transition-colors px-3 py-2 border border-coral/30 rounded-lg hover:border-gold/50"
+                    >
+                      TikTok
+                    </a>
+                    <a 
+                      href="https://wa.me/254710904327" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-coral hover:text-gold transition-colors px-3 py-2 border border-coral/30 rounded-lg hover:border-gold/50"
+                    >
+                      WhatsApp
+                    </a>
+                  </div>
                 </div>
               </div>
-            </div>
 
             {/* Contact Form */}
             <div>

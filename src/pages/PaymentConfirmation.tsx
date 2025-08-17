@@ -28,12 +28,16 @@ const PaymentConfirmation = () => {
   const amount = searchParams.get('amount') || '0';
   const referenceId = searchParams.get('reference') || '';
   const type = searchParams.get('type') || 'booking';
+  const customerName = decodeURIComponent(searchParams.get('name') || '');
 
   useEffect(() => {
     if (referenceId) {
       fetchBookingDetails();
     }
-  }, [referenceId]);
+    if (customerName) {
+      setPaymentData(prev => ({ ...prev, customerName }));
+    }
+  }, [referenceId, customerName]);
 
   const fetchBookingDetails = async () => {
     try {

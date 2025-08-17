@@ -74,7 +74,7 @@ const GiftVoucher = () => {
       });
 
       // Redirect to payment confirmation page
-      navigate(`/payment-confirmation?amount=${formData.amount}&reference=${voucher.id}&type=gift_voucher`);
+      navigate(`/payment-confirmation?amount=${formData.amount}&reference=${voucher.id}&type=gift_voucher&name=${encodeURIComponent(formData.senderName)}`);
 
     } catch (error) {
       console.error('Gift voucher error:', error);

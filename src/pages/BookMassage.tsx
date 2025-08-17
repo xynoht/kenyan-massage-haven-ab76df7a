@@ -237,7 +237,7 @@ const BookMassage = () => {
       sendSimpleNotification(bookingData);
 
       // Redirect to payment confirmation page
-      navigate(`/payment-confirmation?amount=${selectedDuration.price}&reference=${booking.id}&type=booking`);
+      navigate(`/payment-confirmation?amount=${selectedDuration.price}&reference=${booking.id}&type=booking&name=${encodeURIComponent(bookingData.name)}`);
 
     } catch (error) {
       console.error('Booking error:', error);
