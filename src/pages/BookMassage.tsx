@@ -189,8 +189,13 @@ const BookMassage = () => {
     setIsSubmitting(true);
 
     try {
+      console.log("Starting booking submission...");
+      
       // Check availability
+      console.log("Checking availability...");
       const isAvailable = await checkAvailability();
+      console.log("Availability check result:", isAvailable);
+      
       if (!isAvailable) {
         toast({
           title: "Time Slot Unavailable",
@@ -228,13 +233,20 @@ const BookMassage = () => {
         status: 'pending'
       };
 
+      console.log("Inserting booking data:", bookingData);
+      
       const { data: booking, error: bookingError } = await supabase
         .from('bookings')
         .insert(bookingData)
         .select()
         .single();
 
-      if (bookingError) throw bookingError;
+      console.log("Booking insert result:", { booking, bookingError });
+      
+      if (bookingError) {
+        console.error("Booking error details:", bookingError);
+        throw bookingError;
+      }
 
       // Send simple notification
       sendSimpleNotification(bookingData);
@@ -249,10 +261,13 @@ const BookMassage = () => {
       setShowPaymentModal(true);
 
     } catch (error) {
-      console.error('Booking error:', error);
+      console.error('Detailed booking error:', error);
+      console.error('Error message:', error.message);
+      console.error('Error details:', error.details);
+      console.error('Error hint:', error.hint);
       toast({
         title: "Booking Failed",
-        description: "There was an error processing your booking. Please try again.",
+        description: `Error: ${error.message || "There was an error processing your booking. Please try again."}`,
         variant: "destructive",
       });
     } finally {
