@@ -14,6 +14,7 @@ import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
+import PaymentModal from "@/components/PaymentModal";
 
 const BookMassage = () => {
   const [date, setDate] = useState<Date>();
@@ -28,6 +29,8 @@ const BookMassage = () => {
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [paymentDetails, setPaymentDetails] = useState<any>(null);
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -236,8 +239,14 @@ const BookMassage = () => {
       // Send simple notification
       sendSimpleNotification(bookingData);
 
-      // Redirect to payment confirmation page
-      navigate(`/payment-confirmation?amount=${selectedDuration.price}&reference=${booking.id}&type=booking&name=${encodeURIComponent(bookingData.name)}`);
+      // Show payment modal instead of redirecting
+      setPaymentDetails({
+        amount: selectedDuration.price,
+        referenceId: booking.id,
+        transactionType: 'booking',
+        description: `${selectedDuration.label} massage at ${formData.branch}`
+      });
+      setShowPaymentModal(true);
 
     } catch (error) {
       console.error('Booking error:', error);
@@ -540,6 +549,21 @@ const BookMassage = () => {
           </div>
         </div>
       </section>
+
+      {/* Payment Modal */}
+      {showPaymentModal && paymentDetails && (
+        <PaymentModal
+          isOpen={showPaymentModal}
+          onClose={() => {
+            setShowPaymentModal(false);
+            navigate(`/payment-confirmation?amount=${paymentDetails.amount}&reference=${paymentDetails.referenceId}&type=${paymentDetails.transactionType}&name=${encodeURIComponent(formData.name)}`);
+          }}
+          amount={paymentDetails.amount}
+          referenceId={paymentDetails.referenceId}
+          transactionType={paymentDetails.transactionType}
+          description={paymentDetails.description}
+        />
+      )}
     </div>
   );
 };
