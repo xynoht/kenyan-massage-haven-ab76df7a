@@ -417,6 +417,10 @@ export type Database = {
           unique_customers: number
         }[]
       }
+      is_active_admin: {
+        Args: Record<PropertyKey, never>
+        Returns: boolean
+      }
     }
     Enums: {
       admin_role: "super_admin" | "admin" | "moderator"
