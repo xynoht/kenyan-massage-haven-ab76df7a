@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -8,13 +7,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { CalendarIcon, Clock, MapPin, AlertCircle } from "lucide-react";
+import { CalendarIcon, AlertCircle } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
-import PaymentModal from "@/components/PaymentModal";
 
 const BookMassage = () => {
   const [date, setDate] = useState<Date>();
@@ -29,8 +27,6 @@ const BookMassage = () => {
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [showPaymentModal, setShowPaymentModal] = useState(false);
-  const [paymentDetails, setPaymentDetails] = useState<any>(null);
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -41,24 +37,18 @@ const BookMassage = () => {
   ];
 
   const durations = [
-    { value: "15", label: "15 Minutes - Ksh 500", price: 500 },
-    { value: "30", label: "30 Minutes - Ksh 1,000", price: 1000 },
-    { value: "45", label: "45 Minutes - Ksh 1,500", price: 1500 }
+    { value: "15", label: "15 Minutes", price: 500 },
+    { value: "30", label: "30 Minutes", price: 1000 },
+    { value: "45", label: "45 Minutes", price: 1500 }
   ];
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
 
-    // Name validation
     if (!formData.name.trim()) {
       newErrors.name = "Full name is required";
-    } else if (formData.name.trim().length < 2) {
-      newErrors.name = "Name must be at least 2 characters";
-    } else if (!/^[a-zA-Z\s]+$/.test(formData.name.trim())) {
-      newErrors.name = "Name can only contain letters and spaces";
     }
 
-    // Phone validation
     if (!formData.phone.trim()) {
       newErrors.phone = "Phone number is required";
     } else {
@@ -69,7 +59,6 @@ const BookMassage = () => {
       }
     }
 
-    // Email validation (optional but must be valid if provided)
     if (formData.email.trim()) {
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(formData.email.trim())) {
@@ -77,7 +66,6 @@ const BookMassage = () => {
       }
     }
 
-    // Date validation
     if (!date) {
       newErrors.date = "Please select a date";
     } else {
@@ -89,104 +77,28 @@ const BookMassage = () => {
       if (selectedDate < today) {
         newErrors.date = "Please select a future date";
       }
-      
-      // Check if date is too far in the future (3 months)
-      const maxDate = new Date();
-      maxDate.setMonth(maxDate.getMonth() + 3);
-      if (selectedDate > maxDate) {
-        newErrors.date = "Bookings can only be made up to 3 months in advance";
-      }
     }
 
-    // Time validation
     if (!formData.time) {
       newErrors.time = "Please select a time";
     }
 
-    // Duration validation
     if (!formData.duration) {
       newErrors.duration = "Please select a duration";
     }
 
-    // Branch validation
     if (!formData.branch) {
       newErrors.branch = "Please select a branch";
-    }
-
-    // Notes validation (optional but length limit)
-    if (formData.notes && formData.notes.length > 500) {
-      newErrors.notes = "Notes must be less than 500 characters";
     }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  const checkAvailability = async () => {
-    try {
-      const { data: existingBookings, error } = await supabase
-        .from('bookings')
-        .select('time, duration')
-        .eq('date', format(date!, 'yyyy-MM-dd'))
-        .eq('branch', formData.branch)
-        .in('status', ['pending', 'confirmed']);
-
-      if (error) throw error;
-
-      // Check for time conflicts
-      const selectedTime = formData.time;
-      const selectedDuration = parseInt(formData.duration);
-      
-      for (const booking of existingBookings) {
-        const existingTime = booking.time;
-        const existingDuration = booking.duration;
-        
-        // Simple time conflict check (can be improved)
-        if (existingTime === selectedTime) {
-          return false;
-        }
-      }
-      
-      return true;
-    } catch (error) {
-      console.error('Availability check error:', error);
-      return true; // Allow booking if check fails
-    }
-  };
-
-  const sendSimpleNotification = (bookingData: any) => {
-    // Simple customer notification without API
-    const message = `Thank you ${bookingData.name}! Your booking has been received for ${format(date!, 'MMM dd, yyyy')} at ${bookingData.time}. We'll confirm shortly via ${bookingData.phone}.`;
-    
-    toast({
-      title: "Booking Submitted!",
-      description: message,
-      duration: 8000,
-    });
-
-    // Log notification for admin reference
-    console.log('Customer notification sent:', {
-      customer: bookingData.name,
-      phone: bookingData.phone,
-      date: format(date!, 'yyyy-MM-dd'),
-      time: bookingData.time,
-      message: message
-    });
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    console.log("Form submission started");
-    console.log("Current form data:", formData);
-    console.log("Selected date:", date);
-    
-    const validationResult = validateForm();
-    console.log("Validation result:", validationResult);
-    console.log("Current errors:", errors);
-    
-    if (!validationResult) {
-      console.log("Form validation failed, stopping submission");
+    if (!validateForm()) {
       toast({
         title: "Please fix the errors",
         description: "Check the form for validation errors and try again.",
@@ -194,29 +106,10 @@ const BookMassage = () => {
       });
       return;
     }
-    
-    console.log("Form validation passed, proceeding with submission");
 
     setIsSubmitting(true);
 
     try {
-      console.log("Starting booking submission...");
-      
-      // Check availability
-      console.log("Checking availability...");
-      const isAvailable = await checkAvailability();
-      console.log("Availability check result:", isAvailable);
-      
-      if (!isAvailable) {
-        toast({
-          title: "Time Slot Unavailable",
-          description: "The selected time slot is already booked. Please choose a different time.",
-          variant: "destructive",
-        });
-        setIsSubmitting(false);
-        return;
-      }
-
       const selectedDuration = durations.find(d => d.value === formData.duration);
       if (!selectedDuration) {
         throw new Error("Invalid duration selected");
@@ -244,38 +137,26 @@ const BookMassage = () => {
         status: 'pending'
       };
 
-      console.log("Inserting booking data:", bookingData);
-      
       const { data: booking, error: bookingError } = await supabase
         .from('bookings')
         .insert(bookingData)
         .select()
         .single();
 
-      console.log("Booking insert result:", { booking, bookingError });
-      
       if (bookingError) {
-        console.error("Booking error details:", bookingError);
         throw bookingError;
       }
 
-      // Send simple notification
-      sendSimpleNotification(bookingData);
-
-      // Show payment modal instead of redirecting
-      setPaymentDetails({
-        amount: selectedDuration.price,
-        referenceId: booking.id,
-        transactionType: 'booking',
-        description: `${selectedDuration.label} massage at ${formData.branch}`
+      toast({
+        title: "Booking Created!",
+        description: "Please proceed to payment to confirm your booking.",
       });
-      setShowPaymentModal(true);
+
+      // Navigate to payment confirmation page
+      navigate(`/payment-confirmation?amount=${selectedDuration.price}&referenceId=${booking.id}&type=booking&customerName=${encodeURIComponent(formData.name)}`);
 
     } catch (error) {
-      console.error('Detailed booking error:', error);
-      console.error('Error message:', error.message);
-      console.error('Error details:', error.details);
-      console.error('Error hint:', error.hint);
+      console.error('Booking error:', error);
       toast({
         title: "Booking Failed",
         description: `Error: ${error.message || "There was an error processing your booking. Please try again."}`,
@@ -424,9 +305,7 @@ const BookMassage = () => {
                             disabled={(date) => {
                               const today = new Date();
                               today.setHours(0, 0, 0, 0);
-                              const maxDate = new Date();
-                              maxDate.setMonth(maxDate.getMonth() + 3);
-                              return date < today || date > maxDate;
+                              return date < today;
                             }}
                           />
                         </PopoverContent>
@@ -475,7 +354,7 @@ const BookMassage = () => {
                           <SelectContent>
                             {durations.map((duration) => (
                               <SelectItem key={duration.value} value={duration.value}>
-                                {duration.label}
+                                {duration.label} - KSh {duration.price.toLocaleString()}
                               </SelectItem>
                             ))}
                           </SelectContent>
@@ -489,40 +368,25 @@ const BookMassage = () => {
                       </div>
                     </div>
 
-                    {/* Special Notes */}
+                    {/* Notes */}
                     <div>
-                      <Label htmlFor="notes" className="text-white">Special Notes (Optional)</Label>
+                      <Label htmlFor="notes" className="text-white">Special Requests (Optional)</Label>
                       <Textarea
                         id="notes"
                         value={formData.notes}
                         onChange={(e) => setFormData({...formData, notes: e.target.value})}
-                        className={cn(
-                          "bg-gray-700 border-gray-600 text-white",
-                          errors.notes && "border-red-500"
-                        )}
-                        placeholder="Any special requests or health considerations..."
+                        className="bg-gray-700 border-gray-600 text-white"
+                        placeholder="Any special requests or preferences..."
                         rows={3}
-                        maxLength={500}
                       />
-                      <div className="flex justify-between items-center mt-1">
-                        <div>
-                          {errors.notes && (
-                            <div className="flex items-center text-red-400 text-sm">
-                              <AlertCircle className="h-3 w-3 mr-1" />
-                              {errors.notes}
-                            </div>
-                          )}
-                        </div>
-                        <span className="text-gray-400 text-sm">{formData.notes.length}/500</span>
-                      </div>
                     </div>
 
                     <Button 
                       type="submit" 
+                      className="w-full bg-gold hover:bg-gold/90 text-black font-semibold py-3"
                       disabled={isSubmitting}
-                      className="w-full bg-coral hover:bg-coral/90 text-black font-semibold py-3"
                     >
-                      {isSubmitting ? "Processing..." : "Proceed to Payment"}
+                      {isSubmitting ? "Creating Booking..." : "Book Now"}
                     </Button>
                   </form>
                 </CardContent>
@@ -530,44 +394,44 @@ const BookMassage = () => {
             </div>
 
             {/* Booking Summary */}
-            <div>
-              <Card className="bg-gray-800 border-gold/20 sticky top-24">
+            <div className="lg:col-span-1">
+              <Card className="bg-gray-800 border-gold/20 sticky top-4">
                 <CardHeader>
                   <CardTitle className="text-xl text-gold">Booking Summary</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <div className="flex items-center text-gray-300">
-                    <MapPin className="h-4 w-4 mr-2 text-coral" />
-                    <span>{formData.branch || "Select branch"}</span>
-                  </div>
-                  
-                  <div className="flex items-center text-gray-300">
-                    <CalendarIcon className="h-4 w-4 mr-2 text-coral" />
-                    <span>{date ? format(date, "PPP") : "Select date"}</span>
-                  </div>
-                  
-                  <div className="flex items-center text-gray-300">
-                    <Clock className="h-4 w-4 mr-2 text-coral" />
-                    <span>{formData.time || "Select time"}</span>
-                  </div>
-
-                  {selectedDuration && (
-                    <div className="border-t border-gray-600 pt-4">
-                      <div className="flex justify-between items-center">
-                        <span className="text-white">{selectedDuration.value} Minutes</span>
-                        <span className="text-coral font-semibold">Ksh {selectedDuration.price}</span>
+                  <div className="text-white">
+                    {formData.branch && (
+                      <div className="flex justify-between">
+                        <span>Location:</span>
+                        <span className="text-gold">{formData.branch.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}</span>
                       </div>
-                    </div>
-                  )}
-
-                  <div className="bg-gray-700 p-4 rounded-lg">
-                    <h3 className="text-gold font-semibold mb-2">What to Expect:</h3>
-                    <ul className="text-sm text-gray-300 space-y-1">
-                      <li>• AI-powered massage chair experience</li>
-                      <li>• Clean, sanitized environment</li>
-                      <li>• Professional wellness guidance</li>
-                      <li>• Relaxing atmosphere</li>
-                    </ul>
+                    )}
+                    {date && (
+                      <div className="flex justify-between">
+                        <span>Date:</span>
+                        <span className="text-gold">{format(date, "MMM dd, yyyy")}</span>
+                      </div>
+                    )}
+                    {formData.time && (
+                      <div className="flex justify-between">
+                        <span>Time:</span>
+                        <span className="text-gold">{formData.time}</span>
+                      </div>
+                    )}
+                    {selectedDuration && (
+                      <>
+                        <div className="flex justify-between">
+                          <span>Duration:</span>
+                          <span className="text-gold">{selectedDuration.label}</span>
+                        </div>
+                        <hr className="border-gray-600" />
+                        <div className="flex justify-between text-lg font-semibold">
+                          <span>Total:</span>
+                          <span className="text-gold">KSh {selectedDuration.price.toLocaleString()}</span>
+                        </div>
+                      </>
+                    )}
                   </div>
                 </CardContent>
               </Card>
@@ -575,21 +439,6 @@ const BookMassage = () => {
           </div>
         </div>
       </section>
-
-      {/* Payment Modal */}
-      {showPaymentModal && paymentDetails && (
-        <PaymentModal
-          isOpen={showPaymentModal}
-          onClose={() => {
-            setShowPaymentModal(false);
-            navigate(`/payment-confirmation?amount=${paymentDetails.amount}&reference=${paymentDetails.referenceId}&type=${paymentDetails.transactionType}&name=${encodeURIComponent(formData.name)}`);
-          }}
-          amount={paymentDetails.amount}
-          referenceId={paymentDetails.referenceId}
-          transactionType={paymentDetails.transactionType}
-          description={paymentDetails.description}
-        />
-      )}
     </div>
   );
 };

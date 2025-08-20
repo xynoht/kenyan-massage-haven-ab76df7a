@@ -1,45 +1,56 @@
 
 import { useState, useEffect } from "react";
-import { useSearchParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Upload, CheckCircle, Clock, CreditCard } from "lucide-react";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { Upload, Copy, CheckCircle, CreditCard } from "lucide-react";
 
 const PaymentConfirmation = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { toast } = useToast();
   
-  const [paymentData, setPaymentData] = useState({
-    customerName: "",
-    phoneNumber: "",
-    transactionCode: "",
-    notes: "",
-    screenshot: null as File | null
+  const [paymentDetails, setPaymentDetails] = useState({
+    customerName: searchParams.get('customerName') || '',
+    phoneNumber: '',
+    transactionCode: '',
+    notes: ''
   });
+  
+  const [screenshot, setScreenshot] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [bookingDetails, setBookingDetails] = useState<any>(null);
-  
-  const amount = searchParams.get('amount') || '0';
-  const referenceId = searchParams.get('reference') || '';
+  const [copied, setCopied] = useState<string | null>(null);
+
+  const amount = parseInt(searchParams.get('amount') || '0');
+  const referenceId = searchParams.get('referenceId') || '';
   const type = searchParams.get('type') || 'booking';
-  const customerName = decodeURIComponent(searchParams.get('name') || '');
+
+  const paybillNumber = "880100";
+  const accountNumber = "8504260017";
 
   useEffect(() => {
-    if (referenceId) {
-      fetchBookingDetails();
-    }
-    if (customerName) {
-      setPaymentData(prev => ({ ...prev, customerName }));
-    }
-  }, [referenceId, customerName]);
+    fetchBookingDetails();
+  }, [referenceId, type]);
+
+  const copyToClipboard = (text: string, type: string) => {
+    navigator.clipboard.writeText(text);
+    setCopied(type);
+    toast({
+      title: "Copied!",
+      description: `${type} copied to clipboard`,
+    });
+    setTimeout(() => setCopied(null), 2000);
+  };
 
   const fetchBookingDetails = async () => {
+    if (!referenceId) return;
+
     try {
       if (type === 'booking') {
         const { data, error } = await supabase
@@ -47,7 +58,7 @@ const PaymentConfirmation = () => {
           .select('*')
           .eq('id', referenceId)
           .single();
-        
+
         if (error) throw error;
         setBookingDetails(data);
       } else if (type === 'gift_voucher') {
@@ -56,37 +67,42 @@ const PaymentConfirmation = () => {
           .select('*')
           .eq('id', referenceId)
           .single();
-        
+
         if (error) throw error;
         setBookingDetails(data);
       }
     } catch (error) {
       console.error('Error fetching details:', error);
+      toast({
+        title: "Error",
+        description: "Could not fetch booking details",
+        variant: "destructive",
+      });
     }
   };
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
     if (file) {
       if (file.size > 5 * 1024 * 1024) { // 5MB limit
         toast({
           title: "File too large",
-          description: "Please select an image under 5MB",
+          description: "Please upload an image smaller than 5MB",
           variant: "destructive",
         });
         return;
       }
-      setPaymentData({...paymentData, screenshot: file});
+      setScreenshot(file);
     }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!paymentData.customerName || !paymentData.phoneNumber || !paymentData.transactionCode) {
+
+    if (!paymentDetails.customerName || !paymentDetails.phoneNumber || !paymentDetails.transactionCode) {
       toast({
         title: "Missing Information",
-        description: "Please fill in all required fields.",
+        description: "Please fill in all required fields",
         variant: "destructive",
       });
       return;
@@ -95,40 +111,37 @@ const PaymentConfirmation = () => {
     setIsSubmitting(true);
 
     try {
-      // Here you would normally upload the screenshot and save payment confirmation
-      // For now, we'll just save the payment details
+      // Submit payment confirmation to database
       const { error } = await supabase
         .from('payment_transactions')
         .insert({
-          amount: parseInt(amount),
           reference_id: referenceId,
+          amount: amount,
+          transaction_id: paymentDetails.transactionCode,
+          status: 'pending',
           transaction_type: type,
           payment_method: 'mpesa',
-          status: 'pending',
-          transaction_id: paymentData.transactionCode
+          currency: 'KES'
         });
 
       if (error) throw error;
 
       toast({
         title: "Payment Confirmation Submitted!",
-        description: "We'll verify your payment and confirm your booking shortly.",
+        description: "We have received your payment details. We will verify and confirm your booking shortly.",
+        duration: 6000,
       });
 
-      // Navigate back to appropriate page
+      // Redirect to success page after delay
       setTimeout(() => {
-        if (type === 'booking') {
-          navigate('/book-massage');
-        } else {
-          navigate('/gift-voucher');
-        }
-      }, 2000);
+        navigate('/');
+      }, 3000);
 
     } catch (error) {
-      console.error('Payment confirmation error:', error);
+      console.error('Error submitting payment:', error);
       toast({
         title: "Submission Failed",
-        description: "There was an error submitting your payment confirmation.",
+        description: "There was an error submitting your payment details. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -141,161 +154,226 @@ const PaymentConfirmation = () => {
       {/* Header */}
       <section className="py-12 bg-gradient-to-b from-gray-900 to-black">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <CreditCard className="h-16 w-16 text-coral mx-auto mb-6" />
-          <h1 className="text-4xl font-bold text-gold mb-4">Payment Confirmation</h1>
+          <h1 className="text-4xl font-bold text-gold mb-4">Payment Instructions</h1>
           <p className="text-xl text-gray-300">
-            Complete your payment using M-Pesa and upload your confirmation
+            Complete your payment to confirm your booking
           </p>
         </div>
       </section>
 
       <section className="py-12">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            
             {/* Payment Instructions */}
-            <Card className="bg-gray-800 border-gold/20">
-              <CardHeader>
-                <CardTitle className="text-2xl text-gold">M-Pesa Payment Instructions</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="bg-gradient-to-r from-coral to-gold p-6 rounded-lg text-black">
-                  <h3 className="text-xl font-bold mb-4">Payment Details</h3>
-                  <div className="space-y-2">
-                    <p><strong>Pay Bill Number:</strong> 880100</p>
-                    <p><strong>Account Number:</strong> 8504260017</p>
-                    <p><strong>Amount:</strong> Ksh {amount}</p>
-                    <p><strong>Reference:</strong> {referenceId.slice(0, 8)}</p>
-                  </div>
-                </div>
-
-                <div className="space-y-4">
-                  <h4 className="text-lg font-semibold text-coral">How to Pay:</h4>
-                  <ol className="text-gray-300 space-y-2 list-decimal list-inside">
-                    <li>Go to M-Pesa on your phone</li>
-                    <li>Select "Lipa na M-Pesa"</li>
-                    <li>Select "Pay Bill"</li>
-                    <li>Enter Pay Bill Number: <strong className="text-coral">880100</strong></li>
-                    <li>Enter Account Number: <strong className="text-coral">8504260017</strong></li>
-                    <li>Enter Amount: <strong className="text-coral">Ksh {amount}</strong></li>
-                    <li>Enter your M-Pesa PIN</li>
-                    <li>Take a screenshot of the confirmation message</li>
-                    <li>Upload the screenshot using the form</li>
-                  </ol>
-                </div>
-
-                {bookingDetails && (
-                  <div className="bg-gray-700 p-4 rounded-lg">
-                    <h4 className="text-lg font-semibold text-gold mb-2">
-                      {type === 'booking' ? 'Booking Details' : 'Voucher Details'}
-                    </h4>
-                    <div className="text-gray-300 space-y-1">
-                      {type === 'booking' ? (
-                        <>
-                          <p><strong>Name:</strong> {bookingDetails.name}</p>
-                          <p><strong>Date:</strong> {bookingDetails.date}</p>
-                          <p><strong>Time:</strong> {bookingDetails.time}</p>
-                          <p><strong>Duration:</strong> {bookingDetails.duration} minutes</p>
-                        </>
-                      ) : (
-                        <>
-                          <p><strong>Recipient:</strong> {bookingDetails.recipient_name}</p>
-                          <p><strong>Amount:</strong> Ksh {bookingDetails.amount}</p>
-                          <p><strong>Sender:</strong> {bookingDetails.sender_name}</p>
-                        </>
-                      )}
+            <div>
+              <Card className="bg-gray-800 border-gold/20 mb-6">
+                <CardHeader>
+                  <CardTitle className="text-xl text-gold flex items-center gap-2">
+                    <CreditCard className="h-5 w-5" />
+                    M-Pesa Payment Details
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                    <h3 className="font-semibold text-green-800 mb-3">M-Pesa Paybill Payment</h3>
+                    
+                    <div className="space-y-3">
+                      <div className="flex justify-between items-center bg-white rounded p-3">
+                        <div>
+                          <p className="text-sm text-gray-600">Pay Bill Number</p>
+                          <p className="font-mono text-lg font-bold">{paybillNumber}</p>
+                        </div>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => copyToClipboard(paybillNumber, "Paybill number")}
+                          className="ml-2"
+                        >
+                          {copied === "Paybill number" ? (
+                            <CheckCircle className="h-4 w-4 text-green-600" />
+                          ) : (
+                            <Copy className="h-4 w-4" />
+                          )}
+                        </Button>
+                      </div>
+                      
+                      <div className="flex justify-between items-center bg-white rounded p-3">
+                        <div>
+                          <p className="text-sm text-gray-600">Account Number</p>
+                          <p className="font-mono text-lg font-bold">{accountNumber}</p>
+                        </div>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => copyToClipboard(accountNumber, "Account number")}
+                          className="ml-2"
+                        >
+                          {copied === "Account number" ? (
+                            <CheckCircle className="h-4 w-4 text-green-600" />
+                          ) : (
+                            <Copy className="h-4 w-4" />
+                          )}
+                        </Button>
+                      </div>
+                      
+                      <div className="bg-yellow-50 border border-yellow-200 rounded p-3">
+                        <p className="text-sm text-yellow-800">
+                          <strong>Amount:</strong> KSh {amount.toLocaleString()}
+                        </p>
+                        <p className="text-sm text-yellow-800">
+                          <strong>Reference:</strong> {referenceId}
+                        </p>
+                      </div>
+                    </div>
+                    
+                    <div className="mt-4 text-sm text-green-700">
+                      <h4 className="font-semibold mb-2">Step-by-Step Payment Guide:</h4>
+                      <ol className="list-decimal list-inside space-y-1">
+                        <li>Go to M-Pesa menu on your phone</li>
+                        <li>Select "Lipa na M-Pesa"</li>
+                        <li>Select "Pay Bill"</li>
+                        <li>Enter Pay Bill Number: <strong>{paybillNumber}</strong></li>
+                        <li>Enter Account Number: <strong>{accountNumber}</strong></li>
+                        <li>Enter Amount: <strong>KSh {amount.toLocaleString()}</strong></li>
+                        <li>Enter your M-Pesa PIN</li>
+                        <li>Confirm payment</li>
+                        <li>Take a screenshot of the confirmation message</li>
+                        <li>Fill the form below to complete your booking</li>
+                      </ol>
                     </div>
                   </div>
-                )}
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
 
-            {/* Confirmation Form */}
-            <Card className="bg-gray-800 border-gold/20">
-              <CardHeader>
-                <CardTitle className="text-2xl text-gold">Upload Payment Confirmation</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <form onSubmit={handleSubmit} className="space-y-6">
-                  <div>
-                    <Label htmlFor="customerName" className="text-white">Your Name *</Label>
-                    <Input
-                      id="customerName"
-                      value={paymentData.customerName}
-                      onChange={(e) => setPaymentData({...paymentData, customerName: e.target.value})}
-                      className="bg-gray-700 border-gray-600 text-white"
-                      required
-                    />
-                  </div>
-
-                  <div>
-                    <Label htmlFor="phoneNumber" className="text-white">Phone Number Used for Payment *</Label>
-                    <Input
-                      id="phoneNumber"
-                      type="tel"
-                      value={paymentData.phoneNumber}
-                      onChange={(e) => setPaymentData({...paymentData, phoneNumber: e.target.value})}
-                      className="bg-gray-700 border-gray-600 text-white"
-                      placeholder="254XXXXXXXXX"
-                      required
-                    />
-                  </div>
-
-                  <div>
-                    <Label htmlFor="transactionCode" className="text-white">M-Pesa Transaction Code *</Label>
-                    <Input
-                      id="transactionCode"
-                      value={paymentData.transactionCode}
-                      onChange={(e) => setPaymentData({...paymentData, transactionCode: e.target.value.toUpperCase()})}
-                      className="bg-gray-700 border-gray-600 text-white"
-                      placeholder="e.g. QH75XXXX"
-                      required
-                    />
-                  </div>
-
-                  <div>
-                    <Label htmlFor="screenshot" className="text-white">Upload Payment Screenshot</Label>
-                    <div className="mt-2">
-                      <label htmlFor="screenshot" className="cursor-pointer">
-                        <div className="border-2 border-dashed border-gray-600 rounded-lg p-6 text-center hover:border-coral transition-colors">
-                          <Upload className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                          <p className="text-gray-300">
-                            {paymentData.screenshot ? paymentData.screenshot.name : "Click to upload screenshot"}
-                          </p>
-                          <p className="text-sm text-gray-500 mt-2">PNG, JPG up to 5MB</p>
+              {/* Booking Details */}
+              {bookingDetails && (
+                <Card className="bg-gray-800 border-gold/20">
+                  <CardHeader>
+                    <CardTitle className="text-xl text-gold">Booking Summary</CardTitle>
+                  </CardHeader>
+                  <CardContent className="text-white space-y-2">
+                    {type === 'booking' && (
+                      <>
+                        <div className="flex justify-between">
+                          <span>Service:</span>
+                          <span className="text-gold">{bookingDetails.duration} minutes massage</span>
                         </div>
-                      </label>
-                      <input
-                        id="screenshot"
-                        type="file"
-                        accept="image/*"
-                        onChange={handleFileChange}
-                        className="hidden"
+                        <div className="flex justify-between">
+                          <span>Date:</span>
+                          <span className="text-gold">{bookingDetails.date}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>Time:</span>
+                          <span className="text-gold">{bookingDetails.time}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>Branch:</span>
+                          <span className="text-gold">{bookingDetails.branch}</span>
+                        </div>
+                      </>
+                    )}
+                    <hr className="border-gray-600" />
+                    <div className="flex justify-between text-lg font-semibold">
+                      <span>Total Amount:</span>
+                      <span className="text-gold">KSh {amount.toLocaleString()}</span>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+            </div>
+
+            {/* Payment Confirmation Form */}
+            <div>
+              <Card className="bg-gray-800 border-gold/20">
+                <CardHeader>
+                  <CardTitle className="text-xl text-gold">Confirm Your Payment</CardTitle>
+                  <p className="text-gray-300">After making the M-Pesa payment, fill this form to complete your booking</p>
+                </CardHeader>
+                <CardContent>
+                  <form onSubmit={handleSubmit} className="space-y-4">
+                    <div>
+                      <Label htmlFor="customerName" className="text-white">Full Name *</Label>
+                      <Input
+                        id="customerName"
+                        value={paymentDetails.customerName}
+                        onChange={(e) => setPaymentDetails({...paymentDetails, customerName: e.target.value})}
+                        className="bg-gray-700 border-gray-600 text-white"
+                        required
                       />
                     </div>
-                  </div>
 
-                  <div>
-                    <Label htmlFor="notes" className="text-white">Additional Notes (Optional)</Label>
-                    <Textarea
-                      id="notes"
-                      value={paymentData.notes}
-                      onChange={(e) => setPaymentData({...paymentData, notes: e.target.value})}
-                      className="bg-gray-700 border-gray-600 text-white"
-                      placeholder="Any additional information..."
-                      rows={3}
-                    />
-                  </div>
+                    <div>
+                      <Label htmlFor="phoneNumber" className="text-white">Phone Number Used for Payment *</Label>
+                      <Input
+                        id="phoneNumber"
+                        type="tel"
+                        value={paymentDetails.phoneNumber}
+                        onChange={(e) => setPaymentDetails({...paymentDetails, phoneNumber: e.target.value})}
+                        className="bg-gray-700 border-gray-600 text-white"
+                        placeholder="+254 7XX XXX XXX"
+                        required
+                      />
+                    </div>
 
-                  <Button 
-                    type="submit" 
-                    disabled={isSubmitting}
-                    className="w-full bg-coral hover:bg-coral/90 text-black font-semibold py-3"
-                  >
-                    {isSubmitting ? "Submitting..." : "Submit Payment Confirmation"}
-                  </Button>
-                </form>
-              </CardContent>
-            </Card>
+                    <div>
+                      <Label htmlFor="transactionCode" className="text-white">M-Pesa Transaction Code *</Label>
+                      <Input
+                        id="transactionCode"
+                        value={paymentDetails.transactionCode}
+                        onChange={(e) => setPaymentDetails({...paymentDetails, transactionCode: e.target.value})}
+                        className="bg-gray-700 border-gray-600 text-white"
+                        placeholder="e.g., QGH7H8K9L0"
+                        required
+                      />
+                      <p className="text-sm text-gray-400 mt-1">Found in your M-Pesa confirmation message</p>
+                    </div>
+
+                    <div>
+                      <Label htmlFor="screenshot" className="text-white">Upload Payment Screenshot (Optional)</Label>
+                      <div className="mt-2">
+                        <input
+                          id="screenshot"
+                          type="file"
+                          accept="image/*"
+                          onChange={handleFileChange}
+                          className="hidden"
+                        />
+                        <Button
+                          type="button"
+                          variant="outline"
+                          onClick={() => document.getElementById('screenshot')?.click()}
+                          className="w-full bg-gray-700 border-gray-600 text-white hover:bg-gray-600"
+                        >
+                          <Upload className="h-4 w-4 mr-2" />
+                          {screenshot ? screenshot.name : "Choose Image"}
+                        </Button>
+                      </div>
+                    </div>
+
+                    <div>
+                      <Label htmlFor="notes" className="text-white">Additional Notes (Optional)</Label>
+                      <Textarea
+                        id="notes"
+                        value={paymentDetails.notes}
+                        onChange={(e) => setPaymentDetails({...paymentDetails, notes: e.target.value})}
+                        className="bg-gray-700 border-gray-600 text-white"
+                        rows={3}
+                        placeholder="Any additional information..."
+                      />
+                    </div>
+
+                    <Button 
+                      type="submit" 
+                      className="w-full bg-gold hover:bg-gold/90 text-black font-semibold py-3"
+                      disabled={isSubmitting}
+                    >
+                      {isSubmitting ? "Confirming Payment..." : "Confirm Payment"}
+                    </Button>
+                  </form>
+                </CardContent>
+              </Card>
+            </div>
           </div>
         </div>
       </section>
