@@ -177,7 +177,16 @@ const BookMassage = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!validateForm()) {
+    console.log("Form submission started");
+    console.log("Current form data:", formData);
+    console.log("Selected date:", date);
+    
+    const validationResult = validateForm();
+    console.log("Validation result:", validationResult);
+    console.log("Current errors:", errors);
+    
+    if (!validationResult) {
+      console.log("Form validation failed, stopping submission");
       toast({
         title: "Please fix the errors",
         description: "Check the form for validation errors and try again.",
@@ -185,6 +194,8 @@ const BookMassage = () => {
       });
       return;
     }
+    
+    console.log("Form validation passed, proceeding with submission");
 
     setIsSubmitting(true);
 
